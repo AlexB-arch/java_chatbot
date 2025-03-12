@@ -31,13 +31,3 @@ jobs:
 
     - name: Test
       run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
-
-    ## would be cool to get this working but I think it needs some stuff to work. Might fork and play with it.
-    - name: Report
-      uses: dorny/test-reporter@v1
-      if: always()
-      with:
-        name: Maven Tests
-        path: target/surefire-reports/*.xml
-        reporter: java-junit
-        fail-on-error: true
