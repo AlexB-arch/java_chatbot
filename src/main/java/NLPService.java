@@ -28,6 +28,13 @@ public class NLPService {
 
     private void initializeModels() throws IOException {
         // Load sentence detector model
+        try (InputStream sentenceModelIn = getClass().getResourceAsStream("/models/en-sent.bin")) {
+            if (sentenceModelIn != null) {
+                SentenceModel sentenceModel = new SentenceModel(sentenceModelIn);
+                sentenceDetector = new SentenceDetectorME(sentenceModel);
+                
+            }
+        }
 
         // Load tokenizer model
     }
