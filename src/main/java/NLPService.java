@@ -2,8 +2,6 @@ import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
-import opennlp.tools.doccat.DoccatModel;
-import opennlp.tools.doccat.DocumentCategorizerME;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -15,7 +13,6 @@ import java.util.Map;
 public class NLPService {
     private SentenceDetectorME sentenceDetector;
     private TokenizerME tokenizer;
-    private DocumentCategorizerME categorizer;
 
     public NLPService() {
         try {
