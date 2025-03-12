@@ -2,6 +2,10 @@ import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
+import opennlp.tools.namefind.NameFinderME;
+import opennlp.tools.namefind.TokenNameFinderModel;
+import opennlp.tools.postag.POSModel;
+import opennlp.tools.postag.POSTaggerME;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -9,10 +13,13 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 public class NLPService {
     private SentenceDetectorME sentenceDetector;
     private TokenizerME tokenizer;
+    private POSTaggerME posTagger;
+    private NameFinderME nameFinder;
 
     public NLPService() {
         try {
@@ -63,6 +70,30 @@ public class NLPService {
                 }
             }
         }
+
+        // Load POS tagger model
+        try (InputStream posModelIn = getClass().getResourceAsStream("/models/en-pos-maxent.bin")) {
+            if (posModelIn != null) {
+                POSModel posModel = new POSModel(posModelIn);
+                posTagger = new POSTaggerME(posModel);
+                System.out.println("POS tagger model loaded successfully");
+            } else {
+                // Fallback option
+                System.err.println("Error loading POS tagger model");
+            }
+        }
+
+        // Load named entity recognition model
+        try (InputStream nerModelIn = getClass().getResourceAsStream("/models/en-ner.bin")) {
+            if (nerModelIn != null) {
+                TokenNameFinderModel nerModel = new TokenNameFinderModel(nerModelIn);
+                nameFinder = new NameFinderME(nerModel);
+                System.out.println("Named entity recognition model loaded successfully");
+            } else {
+                // Fallback option
+                System.err.println("Error loading named entity recognition model");
+            }
+        }
     }
 
     // Method to unload sentence detector model
@@ -73,6 +104,16 @@ public class NLPService {
     // Method to unload tokenizer model
     public void unloadTokenizer() {
         tokenizer = null;
+    }
+
+    // Method to unload POSTagger
+    public void unloadPOSTagger() {
+        posTagger = null;
+    }
+
+    // Method to unload NameFinder
+    public void unloadNameFinder() {
+        nameFinder = null;
     }
 
     // Methods to use models
@@ -91,6 +132,23 @@ public class NLPService {
         }
 
         return tokenizer.tokenize(sentence);
+    }
+
+    // Adds POS Tagging capability
+    public String[] tagPOS(String[] tokens) {
+        if (posTagger == null) {
+            // Fallback to simple tagging
+            return tokens;
+        }
+
+        return posTagger.tag(tokens);
+    }
+
+    // Add named entity recognition
+    public Map<String, List<String>> findEntities(String tokens) {
+        Map<String, List<String>> entities = new HashMap<>();
+
+        return entities;
     }
 
     public boolean modelIsLoaded() {

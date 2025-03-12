@@ -31,3 +31,6 @@ jobs:
 
     - name: Test
       run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
+
+    - name: Report
+      run: mvn --batch-mode surefire-report:report

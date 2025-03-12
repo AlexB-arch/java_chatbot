@@ -20,6 +20,13 @@ public class DBConnection {
             connection.close();
         } catch (SQLException e) {
             System.err.println("Failed to close the database connection: " + e.getMessage());
+        } finally {
+            connection = null;
         }
+    }
+
+    // Verify if the connection is successful
+    public boolean isConnected() {
+        return connection != null;
     }
 }
