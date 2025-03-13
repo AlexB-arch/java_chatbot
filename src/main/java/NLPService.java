@@ -83,7 +83,7 @@ public class NLPService {
         }
 
         // Load named entity recognition model
-        try (InputStream nerModelIn = getClass().getResourceAsStream("/models/en-ner.bin")) {
+        try (InputStream nerModelIn = getClass().getResourceAsStream("/models/en-ner-person.bin")) {
             if (nerModelIn != null) {
                 TokenNameFinderModel nerModel = new TokenNameFinderModel(nerModelIn);
                 nameFinder = new NameFinderME(nerModel);
