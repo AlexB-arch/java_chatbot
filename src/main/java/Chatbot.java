@@ -23,4 +23,8 @@ public class Chatbot {
         // Process the first sentence as a question
         return questionAnalyzer.processQuestion(sentences[0]);
     }
+
+    public void shutdown() {
+        dbService.close();
+    }
 }

@@ -78,7 +78,7 @@ public class DatabaseService {
 
     // Knowledge base queries
     public List<Map<String, Object>> findAnswer(String topic) {
-        String query = "SELECT answer FROM knowledge_base LIKE ?";
+        String query = "SELECT answer FROM knowledge_base WHERE topic LIKE ?";
         return executeQuery(query, "%" + topic + "%");
     }
 
@@ -86,23 +86,23 @@ public class DatabaseService {
         if (keywords.isEmpty()) {
             return new ArrayList<>();
         }
-
+    
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("SELECT * FROM knowledge_base WHERE ");
-
+    
         for (int i = 0; i < keywords.size(); i++) {
-            queryBuilder.append(" OR ");
-            if (i < keywords.size() - 1) {
-                queryBuilder.append(" topic LIKE ? OR content LIKE ? ");
+            if (i > 0) {
+                queryBuilder.append(" OR ");
             }
+            queryBuilder.append("topic LIKE ? OR content LIKE ?");
         }
-
+    
         Object[] params = new Object[keywords.size() * 2];
         for (int i = 0; i < keywords.size(); i++) {
             params[i * 2] = "%" + keywords.get(i) + "%";
             params[i * 2 + 1] = "%" + keywords.get(i) + "%";
         }
-
+    
         return executeQuery(queryBuilder.toString(), params);
     }
 }
