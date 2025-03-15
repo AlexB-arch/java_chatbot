@@ -1,6 +1,5 @@
 import java.util.*;
 
-
 public class QuestionAnalyzer {
     private NLPService nlpService;
     private DatabaseService dbService;
