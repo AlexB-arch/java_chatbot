@@ -88,7 +88,7 @@ public class DatabaseService {
         }
     
         StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("SELECT * FROM knowledge_base WHERE ");
+        // There is no table called knowledge base
     
         for (int i = 0; i < keywords.size(); i++) {
             if (i > 0) {

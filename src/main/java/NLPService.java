@@ -141,7 +141,22 @@ public class NLPService {
             return tokens;
         }
 
-        return posTagger.tag(tokens);
+        try {
+            // Apply the POS tagger to get the most likely tag sequence
+            String[] tags = posTagger.tag(tokens);
+            
+            /*  Optionally log the tagging results for debugging
+            if (tokens.length > 0 && tags.length > 0) {
+                System.out.println("POS Tagging example: " + tokens[0] + " -> " + tags[0]);
+            }
+            */
+            
+            return tags;
+        } catch (Exception e) {
+            System.err.println("Error during POS tagging: " + e.getMessage());
+            // Return original tokens as fallback in case of error
+            return tokens;
+        }
     }
 
     // Add named entity recognition
