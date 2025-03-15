@@ -10,6 +10,7 @@ import opennlp.tools.postag.POSTaggerME;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -160,8 +161,41 @@ public class NLPService {
     }
 
     // Add named entity recognition
-    public Map<String, List<String>> findEntities(String tokens) {
+    public Map<String, List<String>> findEntities(String[] tokens) {
         Map<String, List<String>> entities = new HashMap<>();
+
+        if (nameFinder == null || tokens.length == 0) {
+            return entities;
+        }
+
+        // Prepare to collect person names
+        List<String> personNames = new ArrayList<>();
+
+        try {
+            // Find person entities
+            opennlp.tools.util.Span[] nameSpans = nameFinder.find(tokens);
+
+            // Convert spans to actual name strings
+            for (opennlp.tools.util.Span span : nameSpans) {
+                StringBuilder entityBuilder = new StringBuilder();
+                for (int i = span.getStart(); i < span.getEnd(); i++) {
+                    entityBuilder.append(tokens[i]);
+                    if (i < span.getEnd() - 1) {
+                        entityBuilder.append(" ");
+                    }
+                }
+                personNames.add(entityBuilder.toString());
+            }
+
+            // Clear before each use
+            nameFinder.clearAdaptiveData();
+        } catch (Exception e) {
+            System.err.println("Error during named entity recognition: " + e.getMessage());
+        }
+
+        if (!personNames.isEmpty()) {
+            entities.put("person", personNames);
+        }
 
         return entities;
     }
