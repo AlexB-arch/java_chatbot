@@ -1,0 +1,99 @@
+@startuml Academic System Class Diagram
+
+' Abstract base class
+abstract class Person {
+  -id : String
+  -firstName : String
+  -lastName : String
+  +getName() : String
+  +{abstract} getRole() : String
+}
+
+' Regular classes
+class Department {
+  -id : String
+  -name : String
+  +getCourses() : List<Course>
+  +getTeachers() : List<Teacher>
+  +getMajors() : List<Major>
+}
+
+class Course {
+  -id : String
+  -title : String
+  -number : int
+  -creditHours : int
+  +getPrerequisites() : List<Course>
+  +getSections() : List<Section>
+}
+
+class Major {
+  -id : String
+  -title : String
+  -requiredHours : int
+  -minimumGPA : float
+  +getRequiredCourses() : List<Course>
+  +getConcentrations() : List<Concentration>
+}
+
+class Student extends Person {
+  -enrolledSections : List<Section>
+  -majors : List<Major>
+  -grades : Map<Section, Float>
+  +getRole() : String
+  +enroll(Section) : boolean
+  +withdraw(Section) : boolean
+  +declareМajor(Major) : void
+}
+
+class Teacher extends Person {
+  -department : Department
+  -isAdjunct : boolean
+  -assignedSections : List<Section>
+  +getRole() : String
+  +assignToSection(Section) : boolean
+}
+
+class Section {
+  -crn : int
+  -maxEnrollment : int
+  -room : String
+  -term : String
+  -startDate : Date
+  -endDate : Date
+  -schedule : String
+  +getEnrolledStudents() : List<Student>
+  +getTeacher() : Teacher
+}
+
+' Meaningful relationships beyond basic cardinality
+
+' Composition: College "owns" departments
+College *-- "1..*" Department : governs >
+
+' Aggregation: Department has teachers but they can exist independently
+Department o-- "1..*" Teacher : employs >
+
+' Dependency: Course prerequisites relationship
+Course ..> Course : requires >
+
+' Qualified association: Student's grades in sections
+Student "1" -- "0..*" Section : "enrolled in\n grade: float" >
+
+' Realization: Major implements academic requirements
+interface AcademicRequirement {
+  +getMinimumGPA() : float
+  +getRequiredHours() : int
+}
+Major ..|> AcademicRequirement
+
+' Association class: Enrollment represents student-section relationship with additional attributes
+class Enrollment {
+  -enrollmentDate : Date
+  -grade : float
+  -status : String
+}
+Student "1" -- "0..*" Enrollment
+Enrollment "0..*" -- "1" Section
+
+@enduml
