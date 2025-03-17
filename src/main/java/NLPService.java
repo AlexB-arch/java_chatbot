@@ -19,7 +19,6 @@ public class NLPService {
     private SentenceDetectorME sentenceDetector;
     private TokenizerME tokenizer;
     private POSTaggerME posTagger;
-    @SuppressWarnings("unused")
     private NameFinderME nameFinder;
     
     public NLPService() {

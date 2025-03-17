@@ -1,0 +1,17 @@
+# CS375 Software Engineering II
+# Alex Burgos
+
+
+@startuml
+actor "Book Borrower"
+usecase "Reserve book"
+usecase "Borrow book"
+usecase "Return book"
+usecase "Pay fine"
+
+"Book Borrower" --> (Reserve book)
+"Book Borrower" --> (Borrow book)
+"Book Borrower" --> (Return book)
+"Book Borrower" --> (Pay fine)
+
+@enduml
