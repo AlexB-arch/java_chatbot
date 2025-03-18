@@ -199,7 +199,7 @@ public class NLPService {
                 Span[] personSpans = nameFinder.find(tokens);
                 for (Span span : personSpans) {
                     String entity = String.join(" ", Arrays.copyOfRange(tokens, span.getStart(), span.getEnd()));
-                    entities.computeIfAbsent("person", k -> new ArrayList<>()).add(entity);
+                    entities.computeIfAbsent(ENTITY_TEACHER, _ -> new ArrayList<>()).add(entity);
                 }
                 nameFinder.clearAdaptiveData(); // Clear adaptive data between documents
             } catch (Exception e) {
@@ -209,7 +209,9 @@ public class NLPService {
     
         // Add rule-based entity recognition for academic domain
         String sentence = String.join(" ", tokens).toLowerCase();
-    
+        
+        findPattern(sentence, "\\b(?:dr|professor|prof)\\.?\\s+([A-Za-z]+)(?:'s)?\\b", ENTITY_TEACHER, entities);
+        
         // Course detection (e.g., CS101, MATH200)
         findPattern(sentence, "\\b[A-Z]{2,4}\\d{3}\\b", ENTITY_COURSE, entities);
         
@@ -283,7 +285,7 @@ public class NLPService {
         
         while (matcher.find()) {
             String entity = matcher.group().trim();
-            entities.computeIfAbsent(entityType, k -> new ArrayList<>()).add(entity);
+            entities.computeIfAbsent(entityType, _ -> new ArrayList<>()).add(entity);
         }
     }
 
@@ -300,7 +302,7 @@ public class NLPService {
                         entity = tokens[j] + " " + entity;
                         j--;
                     }
-                    entities.computeIfAbsent(entityType, k -> new ArrayList<>()).add(entity);
+                    entities.computeIfAbsent(entityType, _ -> new ArrayList<>()).add(entity);
                 }
                 
                 // Check for "in" pattern (e.g., "major in Computer Science")

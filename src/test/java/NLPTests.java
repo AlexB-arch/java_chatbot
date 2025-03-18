@@ -1,4 +1,7 @@
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +15,13 @@ public class NLPTests {
     @Test
     public void testModelLoading() {
         Assert.assertTrue(nlp.modelsAreLoaded());
+    }
+
+    // Test unloading models
+    @Test
+    public void testModelUnloading() {
+        nlp.unloadModels();
+        Assert.assertFalse(nlp.modelsAreLoaded());
     }
 
     // Test sentence detection
@@ -91,33 +101,130 @@ public class NLPTests {
 
         Assert.assertEquals(6, tags.length);
     }
-
-    // Test Name Entity Recognition
+    
     @Test
-    public void testNameEntityRecognition() {
-        String sentence = "John Smith is a professor at the university.";
-        String[] tokens = nlp.tokenize(sentence);
+    public void testBasicCourseExtraction() {
+        String input = "I'm taking CS375 this semester";
+        String[] tokens = nlp.tokenize(input);
         Map<String, List<String>> entities = nlp.findEntities(tokens);
-
-        for (String type : entities.keySet()) {
-            List<String> names = entities.get(type);
-            for (String name : names) {
-                System.out.println(type + ": " + name);
-            }
-        }
         
-        // Check if the model correctly identified "John Smith" as a person
-        boolean hasPersonEntity = entities.containsKey("person") && 
-                                 entities.get("person").stream()
-                                 .anyMatch(name -> name.contains("John"));
+        assertTrue(entities.containsKey(NLPService.ENTITY_COURSE));
+        // Ignore case
+        assertEquals("cs375", entities.get(NLPService.ENTITY_COURSE).get(0));
+    }
+    
+    @Test
+    public void testMultipleCourseExtraction() {
+        String input = "I need to register for CS101 and MATH200 next term";
+        String[] tokens = nlp.tokenize(input);
+        Map<String, List<String>> entities = nlp.findEntities(tokens);
         
-        Assert.assertTrue("Should recognize 'John Smith' as a person entity", hasPersonEntity);
+        assertTrue(entities.containsKey(NLPService.ENTITY_COURSE));
+        assertEquals(2, entities.get(NLPService.ENTITY_COURSE).size());
+        assertTrue(entities.get(NLPService.ENTITY_COURSE).contains("cs101"));
+        assertTrue(entities.get(NLPService.ENTITY_COURSE).contains("math200"));
+    }
+    
+    @Test
+    public void testFourLetterPrefix() {
+        String input = "HIST101 is my favorite class";
+        String[] tokens = nlp.tokenize(input);
+        Map<String, List<String>> entities = nlp.findEntities(tokens);
+        
+        assertTrue("Should extract a course entity", entities.containsKey(NLPService.ENTITY_COURSE));
+        assertEquals("Should extract HIST101", "hist101", entities.get(NLPService.ENTITY_COURSE).get(0));
+    }
+    
+    @Test
+    public void testCourseAtBeginning() {
+        String input = "CS375 is challenging but interesting";
+        String[] tokens = nlp.tokenize(input);
+        Map<String, List<String>> entities = nlp.findEntities(tokens);
+        
+        assertTrue("Should extract a course entity", entities.containsKey(NLPService.ENTITY_COURSE));
+        assertEquals("Should extract CS375", "cs375", entities.get(NLPService.ENTITY_COURSE).get(0));
+    }
+    
+    @Test
+    public void testCourseAtEnd() {
+        String input = "My hardest class is PHYS301";
+        String[] tokens = nlp.tokenize(input);
+        Map<String, List<String>> entities = nlp.findEntities(tokens);
+        
+        assertTrue("Should extract a course entity", entities.containsKey(NLPService.ENTITY_COURSE));
+        assertEquals("Should extract PHYS301", "phys301", entities.get(NLPService.ENTITY_COURSE).get(0));
     }
 
-    // Test unloading models
     @Test
-    public void testModelUnloading() {
-        nlp.unloadModels();
-        Assert.assertFalse(nlp.modelsAreLoaded());
+    public void testTeacherBasicStructure() {
+        String input = "Sarah Johnson is a professor at the university.";
+        String[] tokens = nlp.tokenize(input);
+        Map<String, List<String>> entities = nlp.findEntities(tokens);
+        
+        assertTrue("Should extract a teacher entity", entities.containsKey(NLPService.ENTITY_TEACHER));
+        assertTrue("Should extract Sarah Johnson", 
+                 entities.get(NLPService.ENTITY_TEACHER).stream()
+                 .anyMatch(name -> name.equalsIgnoreCase("Sarah Johnson")));
+    }
+    
+    @Test
+    public void testTeacherPossessiveStructure() {
+        String input = "Dr. Anderson's class is very challenging but informative.";
+        String[] tokens = nlp.tokenize(input);
+        Map<String, List<String>> entities = nlp.findEntities(tokens);
+        
+        assertTrue("Should extract a teacher entity", entities.containsKey(NLPService.ENTITY_TEACHER));
+
+        System.out.println(entities.get(NLPService.ENTITY_TEACHER));
+
+        assertTrue("Should extract Anderson", 
+                 entities.get(NLPService.ENTITY_TEACHER).stream()
+                 .anyMatch(name -> name.equalsIgnoreCase("Dr. Anderson")));
+    }
+    
+    @Test
+    public void testTeacherWithTitle() {
+        String input = "Professor Williams teaches CS375 this semester.";
+        String[] tokens = nlp.tokenize(input);
+        Map<String, List<String>> entities = nlp.findEntities(tokens);
+        
+        assertTrue("Should extract a teacher entity", entities.containsKey(NLPService.ENTITY_TEACHER));
+
+        System.out.println(entities.get(NLPService.ENTITY_TEACHER));
+
+        assertTrue("Should extract Williams", 
+                 entities.get(NLPService.ENTITY_TEACHER).stream()
+                 .anyMatch(name -> name.equalsIgnoreCase("Professor Williams")));
+    }
+    
+    @Test
+    public void testTeacherAtEnd() {
+        String input = "The department chair for Computer Science is Dr. Michael Thompson";
+        String[] tokens = nlp.tokenize(input);
+        Map<String, List<String>> entities = nlp.findEntities(tokens);
+        
+        assertTrue("Should extract a teacher entity", entities.containsKey(NLPService.ENTITY_TEACHER));
+        assertTrue("Should extract Michael Thompson", 
+                 entities.get(NLPService.ENTITY_TEACHER).stream()
+                 .anyMatch(name -> name.equalsIgnoreCase("Michael Thompson")));
+    }
+    
+    @Test
+    public void testMultipleTeachers() {
+        String input = "Jennifer Davis and Robert Wilson are teaching the course together.";
+        String[] tokens = nlp.tokenize(input);
+        Map<String, List<String>> entities = nlp.findEntities(tokens);
+        
+        assertTrue("Should extract teacher entities", entities.containsKey(NLPService.ENTITY_TEACHER));
+        assertEquals("Should extract 2 teachers", 2, entities.get(NLPService.ENTITY_TEACHER).size());
+        
+        List<String> teacherNames = entities.get(NLPService.ENTITY_TEACHER);
+        boolean hasJenniferDavis = teacherNames.stream()
+            .anyMatch(name -> name.equalsIgnoreCase("Jennifer Davis"));
+        boolean hasRobertWilson = teacherNames.stream()
+            .anyMatch(name -> name.equalsIgnoreCase("Robert Wilson"));
+            
+        assertTrue("Should contain Jennifer Davis", hasJenniferDavis);
+        assertTrue("Should contain Robert Wilson", hasRobertWilson);
     }
 }
