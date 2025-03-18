@@ -2,16 +2,34 @@
 # Alex Burgos
 
 
-@startuml
-actor "Book Borrower"
-usecase "Reserve book"
-usecase "Borrow book"
-usecase "Return book"
-usecase "Pay fine"
+@startuml UseCase_axb19c
+actor "Student" #Purple
+actor "Possible_Student" #Lavender
 
-"Book Borrower" --> (Reserve book)
-"Book Borrower" --> (Borrow book)
-"Book Borrower" --> (Return book)
-"Book Borrower" --> (Pay fine)
+database "Database" #Orange
+rectangle "Chatbot" #Blue
+usecase "Grades"
+usecase "Teachers"
+usecase "Majors"
+usecase "Concentrations"
+usecase "Courses"
+usecase "College"
+usecase "Department"
+usecase "Lookup Majors"
 
+Student --> Chatbot : "Ask Questions"
+Chatbot --> Student : "Answer Questions"
+Possible_Student --> (Lookup Majors)
+"Lookup Majors" --> Chatbot
+Chatbot --> Database : "Query Data"
+
+Database {
+    "Database" --> (Grades)
+    "Database" --> (Teachers)
+    "Database" --> (Majors)
+    "Database" --> (Concentrations)
+    "Database" --> (Courses)
+    "Database" --> (College)
+    "Database" --> (Department)
+}
 @enduml
