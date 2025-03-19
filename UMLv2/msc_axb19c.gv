@@ -1,0 +1,33 @@
+@startuml
+title ChatBot Interaction Sequence
+
+actor "Human User" as User #Purple
+actor "Scheduling System" as System #Orange
+participant "ChatBot" as Bot
+participant "Knowledge Base API" as API #LightBlue
+
+== Initial Human Query ==
+User -> Bot: "What classes am I in this semester?"
+note right of User: User initiates conversation with a query
+
+Bot -> Bot: Process natural language query
+Bot -> API: Request section data
+API --> Bot: Return section information
+Bot --> User: "You are in MATH227, CS375, and ITC480"
+
+== Non-Human User Interaction ==
+System -> Bot: Request class schedule data for student ID #12345
+note right of System: Automated system makes API-style request
+Bot -> Bot: Parse structured request
+Bot -> API: Query section schedule data
+API --> Bot: Return detailed schedule information
+Bot --> System: Return JSON formatted class schedule data
+note left of Bot: Bot adapts response format for non-human consumer
+
+== Session End ==
+User -> Bot: "Thanks for the info"
+Bot --> User: "You're welcome! Anything else you need?"
+User -> Bot: "No, that's all"
+Bot --> User: "Goodbye! Have a great day"
+
+@enduml
