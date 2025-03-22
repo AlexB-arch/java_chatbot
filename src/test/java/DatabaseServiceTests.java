@@ -72,8 +72,8 @@ public class DatabaseServiceTests {
 
     // Query a view with a parameter
     @Test
-    public void queryViewWithParameter() {
-        List<Map<String, Object>> results = databaseService.executeQuery("SELECT * FROM v_major_concentrations WHERE major = ?", "Accounting");
+    public void testQueryViewWithParameter() {
+        List<Map<String, Object>> results = databaseService.getMajorConcentrations("Accounting");
         results.forEach(System.out::println);
         Assert.assertTrue(results.size() > 0);
     }

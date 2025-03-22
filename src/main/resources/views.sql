@@ -3,11 +3,11 @@ DROP VIEW IF EXISTS v_required_grade;
 CREATE VIEW v_required_grade AS
 SELECT id, 
        CASE 
-         WHEN id = 'CS375' THEN 'C'
+         WHEN id = ? THEN 'C'
          ELSE 'Unknown'
        END AS RequiredGrade
 FROM course
-WHERE id = 'CS375';
+WHERE id = ?;
 
 -- 2. What concentrations does the Computer Science major have?
 DROP VIEW IF EXISTS v_major_concentrations;
@@ -34,8 +34,8 @@ LEFT JOIN (
     WHERE ss.grade IS NOT NULL  -- adjust if needed to consider only passing grades
     GROUP BY ss.studentID
 ) t ON sm.studentID = t.studentID
-WHERE sm.studentID = 1
-  AND sm.major = 'CS';
+WHERE sm.studentID = ?
+  AND sm.major = ?;
 
 -- 4. What classes am I in?
 DROP VIEW IF EXISTS v_classes_in;
@@ -48,7 +48,7 @@ SELECT c.id AS CourseID,
 FROM student_section ss
 JOIN section s ON ss.sectionID = s.crn
 JOIN course c ON s.courseID = c.id
-WHERE ss.studentID = 1;
+WHERE ss.studentID = ?;
 
 -- 5. How many hours am I taking?
 DROP VIEW IF EXISTS v_total_hours_taking;
@@ -58,7 +58,7 @@ SELECT ss.studentID,
 FROM student_section ss
 JOIN section s ON ss.sectionID = s.crn
 JOIN course c ON s.courseID = c.id
-WHERE ss.studentID = 1
+WHERE ss.studentID = ?
 GROUP BY ss.studentID;
 
 -- 6. What department is my major in?
@@ -71,7 +71,7 @@ SELECT sm.studentID,
 FROM student_major sm
 JOIN major m ON sm.major = m.id
 JOIN department d ON m.deptID = d.id
-WHERE sm.studentID = 1;
+WHERE sm.studentID = ?;
 
 -- 7. Who is my professor for CS375 class? (Requires section.teacherID to be set)
 DROP VIEW IF EXISTS v_professor_cs375;
@@ -83,8 +83,8 @@ FROM student_section ss
 JOIN section s ON ss.sectionID = s.crn
 JOIN course c ON s.courseID = c.id
 JOIN teachers t ON s.teacherID = t.id
-WHERE ss.studentID = 1
-  AND c.id = 'CS375';
+WHERE ss.studentID = ?
+  AND c.id = ?;
 
 -- 8. What majors am I in?
 DROP VIEW IF EXISTS v_student_majors;
@@ -93,7 +93,7 @@ SELECT sm.studentID,
        m.title AS Major
 FROM student_major sm
 JOIN major m ON sm.major = m.id
-WHERE sm.studentID = 1;
+WHERE sm.studentID = ?;
 
 -- 9. What classes do I need to graduate?
 DROP VIEW IF EXISTS v_classes_needed_graduate;
@@ -102,12 +102,12 @@ SELECT c.id AS CourseID,
        c.title AS CourseTitle,
        c.hrs AS CreditHours
 FROM course c
-WHERE c.id IN ('CS120', 'CS130', 'CS230', 'IT220', 'IT221', 'MATH227')
+WHERE c.id IN ?
   AND c.id NOT IN (
     SELECT s.courseID
     FROM student_section ss
     JOIN section s ON ss.sectionID = s.crn
-    WHERE ss.studentID = 1
+    WHERE ss.studentID = ?
       AND ss.grade IS NOT NULL  -- adjust if needed to only count passing grades
   );
 
@@ -121,7 +121,7 @@ FROM student_section ss
 JOIN section s ON ss.sectionID = s.crn
 JOIN course c ON s.courseID = c.id
 JOIN department d ON c.department = d.id
-WHERE ss.studentID = 1
+WHERE ss.studentID = ?
 GROUP BY d.id, d.name
 ORDER BY TotalClassesTaken DESC
 LIMIT 1;
@@ -137,7 +137,7 @@ SELECT c.id AS CourseID,
 FROM student_section ss
 JOIN section s ON ss.sectionID = s.crn
 JOIN course c ON s.courseID = c.id
-WHERE ss.studentID = 1
+WHERE ss.studentID = ?
   AND ss.grade IS NULL;
 
 -- 12. How many hours more do I need to graduate?
@@ -157,18 +157,18 @@ LEFT JOIN (
     WHERE ss.grade IS NOT NULL  -- adjusting this clause lets you count only completed/passing courses
     GROUP BY ss.studentID
 ) t ON sm.studentID = t.studentID
-WHERE sm.studentID = 1;
+WHERE sm.studentID = ?;
 
 -- 13. How many teachers are in the SITC department?
 DROP VIEW IF EXISTS v_teachers_sitc_count;
 CREATE VIEW v_teachers_sitc_count AS
 SELECT COUNT(*) AS TeachersInSITC
 FROM teachers
-WHERE departmentID = 'SITC';
+WHERE departmentID = ?;
 
 -- 14. What are the first and last names of all teachers in the SITC department (concatenated)?
 DROP VIEW IF EXISTS v_teachers_sitc_names;
 CREATE VIEW v_teachers_sitc_names AS
 SELECT lastname || ', ' || firstname AS TeacherName
 FROM teachers
-WHERE departmentID = 'SITC';
+WHERE departmentID = ?;

@@ -76,4 +76,12 @@ public class DatabaseService {
         dbConnection.closeConnection();
     }
 
+    public List<Map<String, Object>> getMajorConcentrations(String major) {
+        if (major != null) {
+            return executeQuery("SELECT * FROM v_major_concentrations WHERE major = ?", major);
+        } else {
+            return executeQuery("SELECT * FROM v_major_concentrations");
+        }
+    }
+
 }
