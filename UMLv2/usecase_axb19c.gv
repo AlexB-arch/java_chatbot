@@ -3,11 +3,17 @@
 
 
 @startuml UseCase_axb19c
-actor "Student" #Purple
+actor "User" #Purple
 actor "Possible_Student" #Lavender
+actor "Student" #Green
+
+User <|-- Student #blue;line.dotted;
+
+note left of Possible_Student : I like pain and suffering!
 
 database "Database" #Orange
 rectangle "Chatbot" #Blue
+
 usecase "Grades"
 usecase "Teachers"
 usecase "Majors"
@@ -17,11 +23,11 @@ usecase "College"
 usecase "Department"
 usecase "Lookup Majors"
 
-Student --> Chatbot : "Ask Questions"
-Chatbot --> Student : "Answer Questions"
+User --> Chatbot : "Ask Questions"
+Chatbot --> User : "Answer Questions"
 Possible_Student --> (Lookup Majors)
 "Lookup Majors" --> Chatbot
-Chatbot --> Database : "Query Data"
+Chatbot ..> Database : <<include>> "Query Data"
 
 Database {
     "Database" --> (Grades)

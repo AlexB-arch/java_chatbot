@@ -146,6 +146,11 @@ public class NLPService {
         unloadNameFinder();
     }
 
+    // Check if models are loaded
+    public boolean modelsAreLoaded() {
+        return sentenceDetector != null && tokenizer != null && posTagger != null && nameFinder != null;
+    }
+
     // Methods to use models
     public String[] detectSentences(String text) {
         if (sentenceDetector == null) {
@@ -230,10 +235,6 @@ public class NLPService {
         return entities;
     }
 
-    public boolean modelsAreLoaded() {
-        return sentenceDetector != null && tokenizer != null && posTagger != null && nameFinder != null;
-    }
-
     // Add intent detection method
     public String detectIntent(String text) {
         text = text.toLowerCase();
@@ -312,7 +313,7 @@ public class NLPService {
                     for (int j = i+3; j < tokens.length && Character.isUpperCase(tokens[j].charAt(0)); j++) {
                         entity.append(" ").append(tokens[j]);
                     }
-                    entities.computeIfAbsent(entityType, k -> new ArrayList<>()).add(entity.toString());
+                    entities.computeIfAbsent(entityType, _ -> new ArrayList<>()).add(entity.toString());
                 }
             }
         }
