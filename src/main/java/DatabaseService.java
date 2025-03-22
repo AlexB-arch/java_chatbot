@@ -76,33 +76,4 @@ public class DatabaseService {
         dbConnection.closeConnection();
     }
 
-    // Knowledge base queries
-    public List<Map<String, Object>> findAnswer(String topic) {
-        String query = "SELECT answer FROM ? WHERE topic LIKE ?";
-        return executeQuery(query, "%" + topic + "%");
-    }
-
-    public List<Map<String, Object>> searchByKeywords(List<String> keywords) {
-        if (keywords.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("SELECT * FROM ? WHERE ");
-        for (int i = 0; i < keywords.size(); i++) {
-            if (i > 0) {
-                queryBuilder.append(" OR ");
-            }
-            queryBuilder.append("content LIKE ? OR question LIKE ?");
-        }
-        
-        Object[] params = new Object[keywords.size() * 2 + 1];
-        params[0] = "qa_pairs";
-        for (int i = 0; i < keywords.size(); i++) {
-            params[i * 2 + 1] = "%" + keywords.get(i) + "%";
-            params[i * 2 + 2] = "%" + keywords.get(i) + "%";
-        }
-        
-        return executeQuery(queryBuilder.toString(), params);
-    }
 }

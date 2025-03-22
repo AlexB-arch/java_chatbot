@@ -16,7 +16,7 @@ SELECT m.title AS Major,
        c.title AS Concentration
 FROM major m
 JOIN concentration c ON m.id = c.major
-WHERE m.title = 'Computer Science';
+WHERE m.title = ?;  -- replace '?' with the major you want to query
 
 -- 3. How many more hours are needed to complete my major requirements?
 DROP VIEW IF EXISTS v_hours_remaining_major;

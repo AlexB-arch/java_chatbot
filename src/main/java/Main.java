@@ -10,17 +10,14 @@ public class Main {
         System.out.println("Type 'exit' to quit.");
 
         while (true) {
-            System.out.print("> ");
+            System.out.print("You: ");
             String input = scanner.nextLine();
-
             if (input.equalsIgnoreCase("exit")) {
                 break;
             }
-
-            String response = chatbot.processUserInput(input);
-            System.out.println(response);
+            chatbot.processText(input);
         }
-
+        
         chatbot.shutdown();
         scanner.close();
         System.out.println("Goodbye!");

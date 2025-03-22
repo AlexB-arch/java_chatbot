@@ -285,7 +285,7 @@ public class NLPService {
         
         while (matcher.find()) {
             String entity = matcher.group().trim();
-            entities.computeIfAbsent(entityType, _ -> new ArrayList<>()).add(entity);
+            entities.computeIfAbsent(entityType, k -> new ArrayList<>()).add(entity);
         }
     }
 
@@ -302,7 +302,7 @@ public class NLPService {
                         entity = tokens[j] + " " + entity;
                         j--;
                     }
-                    entities.computeIfAbsent(entityType, _ -> new ArrayList<>()).add(entity);
+                    entities.computeIfAbsent(entityType, k -> new ArrayList<>()).add(entity);
                 }
                 
                 // Check for "in" pattern (e.g., "major in Computer Science")

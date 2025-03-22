@@ -28,7 +28,6 @@ public class DatabaseServiceTests {
     @Test
     public void outputCollegeNameColumn() {
         List<Map<String, Object>> results = databaseService.executeQuery("SELECT name FROM college");
-        results.forEach(System.out::println);
         Assert.assertTrue(results.size() > 0);
 
         // Now display the college names without the column name
@@ -61,5 +60,21 @@ public class DatabaseServiceTests {
         List<Map<String, Object>> results = databaseService.executeQuery("SELECT id, CASE WHEN id = ? THEN ? ELSE 'Unknown' END AS RequiredGrade FROM course WHERE id = ?;", "ACCT210", "C", "ACCT210");
         results.forEach(System.out::println);
         Assert.assertTrue(results.size() == 1);
+    }
+
+    // Query a view
+    @Test
+    public void queryView() {
+        List<Map<String, Object>> results = databaseService.executeQuery("SELECT * FROM v_major_concentrations");
+        results.forEach(System.out::println);
+        Assert.assertTrue(results.size() > 0);
+    }
+
+    // Query a view with a parameter
+    @Test
+    public void queryViewWithParameter() {
+        List<Map<String, Object>> results = databaseService.executeQuery("SELECT * FROM v_major_concentrations WHERE major = ?", "Accounting");
+        results.forEach(System.out::println);
+        Assert.assertTrue(results.size() > 0);
     }
 }
