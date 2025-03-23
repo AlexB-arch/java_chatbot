@@ -180,12 +180,6 @@ public class NLPService {
             // Apply the POS tagger to get the most likely tag sequence
             String[] tags = posTagger.tag(tokens);
             
-            /*  Optionally log the tagging results for debugging
-            if (tokens.length > 0 && tags.length > 0) {
-                System.out.println("POS Tagging example: " + tokens[0] + " -> " + tags[0]);
-            }
-            */
-            
             return tags;
         } catch (Exception e) {
             System.err.println("Error during POS tagging: " + e.getMessage());
@@ -206,6 +200,7 @@ public class NLPService {
                     String entity = String.join(" ", Arrays.copyOfRange(tokens, span.getStart(), span.getEnd()));
                     entities.computeIfAbsent(ENTITY_TEACHER, _ -> new ArrayList<>()).add(entity);
                 }
+
                 nameFinder.clearAdaptiveData(); // Clear adaptive data between documents
             } catch (Exception e) {
                 System.err.println("Error in named entity recognition: " + e.getMessage());
@@ -231,6 +226,15 @@ public class NLPService {
         if (sentence.contains(" minor") || sentence.contains("minoring")) {
             findSurroundingContextEntities(tokens, "minor", ENTITY_MINOR, entities);
         }
+
+        // College detection
+        findPattern(sentence, "\\bcollege of [a-z]+\\b", ENTITY_COLLEGE, entities);
+
+        // Concentration detection
+        findPattern(sentence, "\\bconcentration in [a-z]+\\b", ENTITY_CONCENTRATION, entities);
+
+        // Section detection
+        findPattern(sentence, "\\bsection [A-Z]\\d{3}\\b", ENTITY_SECTION, entities);
     
         return entities;
     }
@@ -313,7 +317,7 @@ public class NLPService {
                     for (int j = i+3; j < tokens.length && Character.isUpperCase(tokens[j].charAt(0)); j++) {
                         entity.append(" ").append(tokens[j]);
                     }
-                    entities.computeIfAbsent(entityType, _ -> new ArrayList<>()).add(entity.toString());
+                    entities.computeIfAbsent(entityType, k -> new ArrayList<>()).add(entity.toString());
                 }
             }
         }
