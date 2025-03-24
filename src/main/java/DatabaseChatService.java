@@ -17,7 +17,6 @@ public class DatabaseChatService extends BaseQueryProcessor {
     }
     
     private void initializeContext() {
-        // Provide detailed context about the database schema and available methods
         String systemPrompt = 
             "You are an AI assistant for an educational database system. " +
             "The database contains the following tables:\n\n" +
@@ -37,26 +36,13 @@ public class DatabaseChatService extends BaseQueryProcessor {
             "13. student_major (studentID, major)\n" +
             "14. concentration (id, major, title, reqtext)\n\n" +
             
-            "When asked a question about the database, you have two options:\n\n" +
+            "When asked a question about the database, you " +
             
-            "OPTION 1: Generate a SQL query to answer the question directly. " + 
+            "Generate a SQL query to answer the question directly. " + 
             "Format your response with a SQL query between ```sql tags like this:\n" +
             "```sql\n" +
             "SELECT * FROM your_query_here;\n" +
             "```\n\n" +
-            
-            "OPTION 2: Call an existing database service method if appropriate. " +
-            "Format your response like this:\n" +
-            "METHOD: methodName PARAMS: param1, param2, ...\n\n" +
-            
-            "Available database methods:\n" +
-            "- getStudentClasses(studentId) - Get classes a student is taking\n" +
-            "- getStudentMajors(studentId) - Get majors a student is enrolled in\n" +
-            "- getMajorConcentrations(majorId) - Get concentrations for a major\n" +
-            "- getHoursRemaining(studentId) - Get remaining credit hours for graduation\n" +
-            "- getProfessorForCourse(studentId, courseId) - Get professor info for a course\n" +
-            "- getMajorDepartment(studentId) - Get department info for student's major\n" +
-            "- getTeacherNamesInDepartment(departmentId) - Get names of teachers in a department\n\n" +
             
             "After you get the results, explain them clearly and conversationally.";
             
@@ -65,26 +51,20 @@ public class DatabaseChatService extends BaseQueryProcessor {
     
     @Override
     public String processQuery(String userQuestion) {
-        // Ask ChatGPT how to handle this query
         String chatResponse = chatService.sendMessage(
             "User question: \"" + userQuestion + "\"\n" +
-            "Based on this question, either generate an SQL query or suggest a database method call to get the information."
+            "Based on this question, generate an SQL query or suggest a database method call to get the information."
         );
         
         List<Map<String, Object>> results = null;
         
-        // Check if the response contains a SQL query
         Pattern sqlPattern = Pattern.compile(SQL_PATTERN, Pattern.DOTALL);
         Matcher sqlMatcher = sqlPattern.matcher(chatResponse);
         
         if (sqlMatcher.find()) {
-            // Extract the SQL query
             String sqlQuery = sqlMatcher.group(1).trim();
-            
-            // Execute the SQL query directly
             results = dbService.executeQuery(sqlQuery);
         } else {
-            // Check if the response suggests a method call
             Pattern methodPattern = Pattern.compile(METHOD_PATTERN);
             Matcher methodMatcher = methodPattern.matcher(chatResponse);
             
@@ -93,7 +73,6 @@ public class DatabaseChatService extends BaseQueryProcessor {
                 String paramsString = methodMatcher.group(2);
                 String[] params = paramsString.split(",\\s*");
                 
-                // Call the appropriate method based on the suggestion
                 switch (methodName) {
                     case "getStudentClasses":
                         results = dbService.getStudentClasses(params[0]);
@@ -120,15 +99,12 @@ public class DatabaseChatService extends BaseQueryProcessor {
                         return "I'm not sure how to process that request. Method not recognized: " + methodName;
                 }
             } else {
-                // If no SQL or method call is found, just return the original response
                 return chatResponse;
             }
         }
         
-        // Format the results
         String formattedResults = formatResults(results);
         
-        // Ask ChatGPT to interpret the results
         return chatService.sendMessage(
             "User question: \"" + userQuestion + "\"\n" +
             "Database results:\n" + formattedResults + 
@@ -137,35 +113,33 @@ public class DatabaseChatService extends BaseQueryProcessor {
     }
     
     // Format database results into a readable string
-        protected String formatResults(List<Map<String, Object>> results) {
-            if (results == null || results.isEmpty()) {
-                return "No results found.";
-            }
-            
-            StringBuilder sb = new StringBuilder();
-            for (Map<String, Object> row : results) {
-                sb.append("- ");
-                for (Map.Entry<String, Object> entry : row.entrySet()) {
-                    sb.append(entry.getKey()).append(": ").append(entry.getValue()).append(", ");
-                }
-                // Remove the trailing comma and space
-                if (sb.length() > 2) {
-                    sb.setLength(sb.length() - 2);
-                }
-                sb.append("\n");
-            }
-            return sb.toString();
+    protected String formatResults(List<Map<String, Object>> results) {
+        if (results == null || results.isEmpty()) {
+            return "No results found.";
         }
+        
+        StringBuilder sb = new StringBuilder();
+        for (Map<String, Object> row : results) {
+            sb.append("- ");
+            for (Map.Entry<String, Object> entry : row.entrySet()) {
+                sb.append(entry.getKey()).append(": ").append(entry.getValue()).append(", ");
+            }
+            // Remove the trailing comma and space
+            if (sb.length() > 2) {
+                sb.setLength(sb.length() - 2);
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
     
     @Override
     public void close() {
         try {
-            // Close the chat service
             if (chatService != null) {
                 chatService.close();
             }
             
-            // Close the database service
             if (dbService != null) {
                 dbService.close();
             }

@@ -7,7 +7,7 @@ public class DatabaseService {
     public DatabaseService() {
         try {
             // Connect to the SQLite database
-                        conn = DriverManager.getConnection("jdbc:sqlite:chatbotdb");
+            conn = DriverManager.getConnection("jdbc:sqlite:chatbotdb");
             System.out.println("Connected to database successfully");
         } catch (SQLException e) {
             System.err.println("Database connection error: " + e.getMessage());
