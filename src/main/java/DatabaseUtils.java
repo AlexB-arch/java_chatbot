@@ -8,11 +8,6 @@ import java.util.regex.Pattern;
  */
 public final class DatabaseUtils {
     
-    // Regex patterns for extracting entities from questions
-    private static final Pattern STUDENT_ID_PATTERN = Pattern.compile("student\\s+(\\d+)|student\\s+id\\s*(\\d+)|student\\s*#\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
-    private static final Pattern COURSE_ID_PATTERN = Pattern.compile("([A-Z]{2,4})\\s*(\\d{3,4})", Pattern.CASE_INSENSITIVE);
-    private static final Pattern MAJOR_ID_PATTERN = Pattern.compile("(CS|IS|DET|ART|EE|ACCT|BUS|MATH|HIST|ENG)", Pattern.CASE_INSENSITIVE);
-    
     // Private constructor to prevent instantiation
     private DatabaseUtils() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
@@ -25,20 +20,20 @@ public final class DatabaseUtils {
      * @return The extracted student ID or null if none found
      */
     public static String extractStudentId(String question) {
-        Matcher matcher = STUDENT_ID_PATTERN.matcher(question);
-        if (matcher.find()) {
-            for (int i = 1; i <= matcher.groupCount(); i++) {
-                if (matcher.group(i) != null) {
-                    return matcher.group(i);
-                }
+        String[] words = question.split("\\s+");
+        for (int i = 0; i < words.length - 1; i++) {
+            if ((words[i].equalsIgnoreCase("student") || 
+                 words[i].equalsIgnoreCase("id")) && 
+                 i + 1 < words.length && 
+                 words[i + 1].matches("\\d+")) {
+                return words[i + 1];
             }
         }
         
-        // Just look for numbers that could be IDs
-        Pattern simplePattern = Pattern.compile("\\b(\\d{1,3})\\b");
-        Matcher simpleMatcher = simplePattern.matcher(question);
-        if (simpleMatcher.find()) {
-            return simpleMatcher.group(1);
+        for (String word : words) {
+            if (word.matches("\\d+") && word.length() <= 3) {
+                return word;
+            }
         }
         
         return null;
@@ -51,11 +46,11 @@ public final class DatabaseUtils {
      * @return The extracted course ID or null if none found
      */
     public static String extractCourseId(String question) {
-        Matcher matcher = COURSE_ID_PATTERN.matcher(question);
-        if (matcher.find()) {
-            String dept = matcher.group(1).toUpperCase();
-            String num = matcher.group(2);
-            return dept + num;
+        String[] words = question.split("\\s+");
+        for (String word : words) {
+            if (word.matches("[A-Z]{2,4}\\d{3}")) {
+                return word;
+            }
         }
         return null;
     }
@@ -67,9 +62,11 @@ public final class DatabaseUtils {
      * @return The extracted major ID or null if none found
      */
     public static String extractMajorId(String question) {
-        Matcher matcher = MAJOR_ID_PATTERN.matcher(question);
-        if (matcher.find()) {
-            return matcher.group(1).toUpperCase();
+        String[] majors = {"CS", "IS", "DET", "ART", "EE", "ACCT", "MATH", "PHYS", "CHEM", "BIO", "ENG", "HIST", "PSYCH", "SOC", "ANTH", "MUS", "PHIL", "COMM", "ECON"};
+        for (String major : majors) {
+            if (question.toUpperCase().contains(major)) {
+                return major;
+            }
         }
         return null;
     }
