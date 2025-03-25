@@ -25,59 +25,36 @@ public class Chatbot {
             .maxTokens(500)
             .build();
     }
-    
-    public void setSystemMessage(String message) {
-        this.baseSystemMessage = message;
-        updateSystemMessage();
-    }
-    
-    public void setCurrentStudent(Student student) {
-        this.currentStudent = student;
-        updateSystemMessage();
-    }
-    
-    private void updateSystemMessage() {
-        conversationHistory.clear();
-        
-        // Create a system message that includes student context if available
-        StringBuilder systemMessage = new StringBuilder(baseSystemMessage != null ? baseSystemMessage : "");
-        
-        if (currentStudent != null) {
-            systemMessage.append("\n\nCurrent user information:");
-            systemMessage.append("\nName: ").append(currentStudent.getName());
-            systemMessage.append("\nStudent ID: ").append(currentStudent.getStudentId());
-            systemMessage.append("\nMajor: ").append(currentStudent.getMajor());
-            systemMessage.append("\nGPA: ").append(currentStudent.getGpa());
-            systemMessage.append("\n\nPlease personalize responses for this student.");
+
+    public String processText(String text) {
+        // Detect intent
+        String intent = nlpService.detectIntent(text);
+
+        // Detect sentences
+        String[] sentences = nlpService.detectSentences(text);
+        StringBuilder response = new StringBuilder();
+
+        for (String sentence : sentences) {
+            // Tokenize each sentence
+            String[] tokens = nlpService.tokenize(sentence);
+            
+       // POS tagging
+            String[] tags = nlpService.tagPOS(tokens);
+            
+            // Entity extraction
+            //Map<String, List<String>> entities = nlpService.findEntities(tokens);
+            
+            // Process based on intent and entities
+            //String sentenceResponse = generateResponse(intent, sentence, entities);
+            if (response.length() > 0) {
+                response.append("\n");
+            }
+            //response.append(sentenceResponse);
         }
         
-        conversationHistory.add(new SystemMessage(systemMessage.toString()));
-    }
-    
-    public String sendMessage(String userMessage) {
-        // Add user message to conversation history
-        conversationHistory.add(new UserMessage(userMessage));
-        
-        // Get response from the model
-        ChatResponse response = chatModel.chat(conversationHistory);
-        
-        // Extract the AI message from the response
-        AiMessage aiMessage = response.aiMessage();
-        
-        // Add AI response to conversation history
-        conversationHistory.add(aiMessage);
-        
-        // Return the response text
-        return aiMessage.text();
-    }
-    
-    public void clearConversation() {
-        conversationHistory.clear();
-        updateSystemMessage(); // Re-add the system message with current student context
-    }
-    
-    public Student getCurrentStudent() {
-        return currentStudent;
+        String responseText = response.toString();
+        System.out.println("Chatbot: " + responseText);
+        return responseText;
     }
     
     public void close() {
