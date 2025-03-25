@@ -30,7 +30,7 @@ public class Chatbot {
             String[] tags = nlpService.tagPOS(tokens);
             
             // Entity extraction
-            Map<String, List<String>> entities = nlpService.findEntities(tokens);
+            //Map<String, List<String>> entities = nlpService.findEntities(tokens);
             
             // Process based on intent and entities
             //String sentenceResponse = generateResponse(intent, sentence, entities);
