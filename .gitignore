@@ -23,4 +23,8 @@ buildNumber.properties
 =======
 config.properties
 .github
+<<<<<<< HEAD
 >>>>>>> 8ec870e (Changes to gitignore, adds github folder)
+=======
+.DS_Store
+>>>>>>> 1413e0a (Adds DS_Store to git ignore)
