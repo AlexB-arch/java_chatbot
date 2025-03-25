@@ -16,6 +16,11 @@ buildNumber.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 .vscode
+<<<<<<< HEAD
 *.properties
 .github
 .DS_Store
+=======
+config.properties
+.github
+>>>>>>> 8ec870e (Changes to gitignore, adds github folder)
