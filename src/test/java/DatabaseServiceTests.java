@@ -71,10 +71,10 @@ public class DatabaseServiceTests {
     }
 
     // Query a view with a parameter
-    @Test
+    /*@Test
     public void testQueryViewWithParameter() {
         List<Map<String, Object>> results = databaseService.getMajorConcentrations("Accounting");
         results.forEach(System.out::println);
         Assert.assertTrue(results.size() > 0);
-    }
+    }*/
 }

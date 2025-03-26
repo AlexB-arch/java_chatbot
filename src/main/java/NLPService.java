@@ -198,7 +198,7 @@ public class NLPService {
                 Span[] personSpans = nameFinder.find(tokens);
                 for (Span span : personSpans) {
                     String entity = String.join(" ", Arrays.copyOfRange(tokens, span.getStart(), span.getEnd()));
-                    entities.computeIfAbsent(ENTITY_TEACHER, _ -> new ArrayList<>()).add(entity);
+                    entities.computeIfAbsent(ENTITY_TEACHER, k -> new ArrayList<>()).add(entity);
                 }
 
                 nameFinder.clearAdaptiveData(); // Clear adaptive data between documents
