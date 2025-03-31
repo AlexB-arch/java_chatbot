@@ -47,7 +47,7 @@ public class Main {
             
             dbChatService.close();
             scanner.close();
-            System.out.println("Goodbye!");
+            
         } catch (Exception e) {
             System.err.println("An error occurred: " + e.getMessage());
             e.printStackTrace();
