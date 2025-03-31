@@ -5,7 +5,6 @@ import java.util.regex.Pattern;
 
 public class DatabaseChatService extends BaseQueryProcessor {
     private static final String SQL_PATTERN = "```sql\\s+(.*?)\\s+```";
-    private static final String METHOD_PATTERN = "METHOD:\\s+(\\w+)\\s+PARAMS:\\s+(.+)";
     
     private ChatService chatService;
     private DatabaseService dbService;
@@ -20,7 +19,7 @@ public class DatabaseChatService extends BaseQueryProcessor {
         // Provide detailed context about the database schema and available methods
         String systemPrompt = 
             "You are an AI assistant for an educational database system. " +
-            "The database contains the following tables:\n\n" +
+            "Answer questions by generating SQL queries that extract the needed information from these tables:\n\n" +
             
             "1. college (id, name)\n" +
             "2. student (id, firstname, lastname)\n" +
@@ -37,6 +36,7 @@ public class DatabaseChatService extends BaseQueryProcessor {
             "13. student_major (studentID, major)\n" +
             "14. concentration (id, major, title, reqtext)\n\n" +
             
+<<<<<<< HEAD
             "When asked a question about the database, you have two options:\n\n" +
             
             "OPTION 1: Generate a SQL query to answer the question directly. " + 
@@ -58,6 +58,8 @@ public class DatabaseChatService extends BaseQueryProcessor {
             "- getMajorDepartment(studentId) - Get department info for student's major\n" +
             "- getTeacherNamesInDepartment(departmentId) - Get names of teachers in a department\n\n" +
             
+=======
+>>>>>>> 30f77a5 (Some more changes)
             "After you get the results, explain them clearly and conversationally.";
             
         chatService.setSystemMessage(systemPrompt);
@@ -65,6 +67,7 @@ public class DatabaseChatService extends BaseQueryProcessor {
     
     @Override
     public String processQuery(String userQuestion) {
+<<<<<<< HEAD
         // Ask ChatGPT how to handle this query
         String chatResponse = chatService.sendMessage(
             "User question: \"" + userQuestion + "\"\n" +
@@ -74,8 +77,19 @@ public class DatabaseChatService extends BaseQueryProcessor {
         List<Map<String, Object>> results = null;
         
         // Check if the response contains a SQL query
+=======
+        // Ask the LLM to generate a SQL query for the question
+        String chatResponse = chatService.sendMessage(
+            "User question: \"" + userQuestion + "\"\n" +
+            "Generate an appropriate SQL query to answer this question based on the database schema."
+        );
+        
+        // Extract SQL query from the response
+>>>>>>> 30f77a5 (Some more changes)
         Pattern sqlPattern = Pattern.compile(SQL_PATTERN, Pattern.DOTALL);
         Matcher sqlMatcher = sqlPattern.matcher(chatResponse);
+        
+        List<Map<String, Object>> results;
         
         if (sqlMatcher.find()) {
             // Extract the SQL query
@@ -84,6 +98,7 @@ public class DatabaseChatService extends BaseQueryProcessor {
             // Execute the SQL query directly
             results = dbService.executeQuery(sqlQuery);
         } else {
+<<<<<<< HEAD
             // Check if the response suggests a method call
             Pattern methodPattern = Pattern.compile(METHOD_PATTERN);
             Matcher methodMatcher = methodPattern.matcher(chatResponse);
@@ -123,12 +138,21 @@ public class DatabaseChatService extends BaseQueryProcessor {
                 // If no SQL or method call is found, just return the original response
                 return chatResponse;
             }
+=======
+            // Fallback if no SQL was found
+            return "I couldn't generate a proper SQL query for your question. " +
+                   "Could you please rephrase your question?";
+>>>>>>> 30f77a5 (Some more changes)
         }
         
         // Format the results
         String formattedResults = formatResults(results);
         
+<<<<<<< HEAD
         // Ask ChatGPT to interpret the results
+=======
+        // Ask the LLM to generate a conversational response based on the results
+>>>>>>> 30f77a5 (Some more changes)
         return chatService.sendMessage(
             "User question: \"" + userQuestion + "\"\n" +
             "Database results:\n" + formattedResults + 
