@@ -589,16 +589,16 @@ insert into course (id, department, title, num, hrs) values ('SPEN222','SPEN','I
 insert into course (id, department, title, num, hrs) values ('THEA227','THEA','Introduction to Technical Theatre', 227,3);
 
 insert into major (id, title, deptID, reqtext, hrs, gpa) values ('CS', 'Computer Science', 'SITC', 'Minimum grade of C in CS 120, CS 130, CS 230, IT 220, IT 221, MATH 227', 128, 2.00);
-insert into major (id, title, deptID, reqtext, hrs, gpa) values ('ART', 'Interior Design', 'ART', 'Minimum grade of C in art and design courses', 128, 2.00);
-insert into major (id, title, deptID, reqtext, hrs, gpa) values ('EE', 'Electrical Engineering','ENGR', 'Minimum grade for PHYS or ENGR courses, C', 128, 2.00);
+insert into major (id, title, deptID, reqtext, hrs, gpa) values ('INAD', 'Interior Design', 'ART', 'Minimum grade of C in art and design courses', 128, 2.00);
+insert into major (id, title, deptID, reqtext, hrs, gpa) values ('ELEC', 'Electrical Engineering','ENGR', 'Minimum grade for PHYS or ENGR courses, C', 128, 2.00);
 insert into major (id, title, deptID, reqtext, hrs, gpa) values ('DET', 'Digital Entertainment Technology', 'SITC', 'All DET majors must perform two required portfolio reviews', 128, 2.00);
-insert into major (id, title, deptID, reqtext, hrs, gpa) values ('BIBLE', 'Bible','BBMN', 'Minimum grade of a C in all 300 or above Bible classes', 128, 2.00);
+insert into major (id, title, deptID, reqtext, hrs, gpa) values ('BBMN', 'Bible','BBMN', 'Minimum grade of a C in all 300 or above Bible classes', 128, 2.00);
 insert into major (id, title, deptID, reqtext, hrs, gpa) values ('PSYC', 'Psychology', 'PSYC', 'Minimum GPA in major: 2.00', 128, 2.00);
-insert into major (id, title, deptID, reqtext, hrs, gpa) values ('BIO', 'Biochemistry', 'CHEM', 'Minimum GPA in major: 2.00', 128, 2.00);
+insert into major (id, title, deptID, reqtext, hrs, gpa) values ('BCH', 'Biochemistry', 'CHEM', 'Minimum GPA in major: 2.00', 128, 2.00);
 insert into major (id, title, deptID, reqtext, hrs, gpa) values ('CJ', 'Criminal Justice', 'CJ', 'Min grade per major course: C', 128, 2.00);
-insert into major (id, title, deptID, reqtext, hrs, gpa) values ('BBA', 'Accounting', 'COBA', 'Minimum grade in each business course: C', 128, 2.00);
+insert into major (id, title, deptID, reqtext, hrs, gpa) values ('ACCT', 'Accounting', 'COBA', 'Minimum grade in each business course: C', 128, 2.00);
 insert into major (id, title, deptID, reqtext, hrs, gpa) values ('IS', 'Information Systems', 'SITC', 'Minimum grade in each business course: C', 128, 2.00);
-insert into major (id, title, deptID, reqtext, hrs, gpa) values ('BM', 'Business Managment', 'COBA', 'Minimum grade for PHYS or ENGR courses: C', 128, 2.00);
+insert into major (id, title, deptID, reqtext, hrs, gpa) values ('MGMT', 'Business Managment', 'COBA', 'Minimum grade for PHYS or ENGR courses: C', 128, 2.00);
 
 INSERT INTO teachers (id, firstname, lastname, departmentID, adjunct) VALUES (1, 'Brian', 'Burton', 'SITC', 0);
 INSERT INTO teachers (id, firstname, lastname, departmentID, adjunct) VALUES (2, 'Brent', 'Reeves', 'SITC', 0);

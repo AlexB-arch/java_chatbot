@@ -5,7 +5,6 @@ import java.util.regex.Pattern;
 
 public class DatabaseChatService extends BaseQueryProcessor {
     private static final String SQL_PATTERN = "```sql\\s+(.*?)\\s+```";
-    private static final String METHOD_PATTERN = "METHOD:\\s+(\\w+)\\s+PARAMS:\\s+(.+)";
     
     private ChatService chatService;
     private DatabaseService dbService;
@@ -19,7 +18,7 @@ public class DatabaseChatService extends BaseQueryProcessor {
     private void initializeContext() {
         String systemPrompt = 
             "You are an AI assistant for an educational database system. " +
-            "The database contains the following tables:\n\n" +
+            "Answer questions by generating SQL queries that extract the needed information from these tables:\n\n" +
             
             "1. college (id, name)\n" +
             "2. student (id, firstname, lastname)\n" +
@@ -36,14 +35,6 @@ public class DatabaseChatService extends BaseQueryProcessor {
             "13. student_major (studentID, major)\n" +
             "14. concentration (id, major, title, reqtext)\n\n" +
             
-            "When asked a question about the database, you " +
-            
-            "Generate a SQL query to answer the question directly. " + 
-            "Format your response with a SQL query between ```sql tags like this:\n" +
-            "```sql\n" +
-            "SELECT * FROM your_query_here;\n" +
-            "```\n\n" +
-            
             "After you get the results, explain them clearly and conversationally.";
             
         chatService.setSystemMessage(systemPrompt);
@@ -51,60 +42,31 @@ public class DatabaseChatService extends BaseQueryProcessor {
     
     @Override
     public String processQuery(String userQuestion) {
+        // Ask the LLM to generate a SQL query for the question
         String chatResponse = chatService.sendMessage(
             "User question: \"" + userQuestion + "\"\n" +
-            "Based on this question, generate an SQL query or suggest a database method call to get the information."
+            "Generate an appropriate SQL query to answer this question based on the database schema."
         );
         
-        List<Map<String, Object>> results = null;
-        
+        // Extract SQL query from the response
         Pattern sqlPattern = Pattern.compile(SQL_PATTERN, Pattern.DOTALL);
         Matcher sqlMatcher = sqlPattern.matcher(chatResponse);
+        
+        List<Map<String, Object>> results;
         
         if (sqlMatcher.find()) {
             String sqlQuery = sqlMatcher.group(1).trim();
             results = dbService.executeQuery(sqlQuery);
         } else {
-            Pattern methodPattern = Pattern.compile(METHOD_PATTERN);
-            Matcher methodMatcher = methodPattern.matcher(chatResponse);
-            
-            if (methodMatcher.find()) {
-                String methodName = methodMatcher.group(1);
-                String paramsString = methodMatcher.group(2);
-                String[] params = paramsString.split(",\\s*");
-                
-                switch (methodName) {
-                    case "getStudentClasses":
-                        results = dbService.getStudentClasses(params[0]);
-                        break;
-                    case "getStudentMajors":
-                        results = dbService.getStudentMajors(params[0]);
-                        break;
-                    case "getMajorConcentrations":
-                        results = dbService.getMajorConcentrations(params[0]);
-                        break;
-                    case "getHoursRemaining":
-                        results = dbService.getHoursRemaining(params[0]);
-                        break;
-                    case "getProfessorForCourse":
-                        results = dbService.getProfessorForCourse(params[0], params[1]);
-                        break;
-                    case "getMajorDepartment":
-                        results = dbService.getMajorDepartment(params[0]);
-                        break;
-                    case "getTeacherNamesInDepartment":
-                        results = dbService.getTeacherNamesInDepartment(params[0]);
-                        break;
-                    default:
-                        return "I'm not sure how to process that request. Method not recognized: " + methodName;
-                }
-            } else {
-                return chatResponse;
-            }
+            // Fallback if no SQL was found
+            return "I couldn't generate a proper SQL query for your question. " +
+                   "Could you please rephrase your question?";
         }
         
+        // Format the results
         String formattedResults = formatResults(results);
         
+        // Ask the LLM to generate a conversational response based on the results
         return chatService.sendMessage(
             "User question: \"" + userQuestion + "\"\n" +
             "Database results:\n" + formattedResults + 
