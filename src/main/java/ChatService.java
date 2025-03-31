@@ -1,3 +1,16 @@
+<<<<<<< HEAD
+=======
+import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.chat.response.ChatResponse;
+import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.langchain4j.model.openai.*;
+import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.data.message.SystemMessage;
+import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.data.message.AiMessage;
+
+import java.util.ArrayList;
+>>>>>>> 1ea2aac (Adds langchain for openAI API support)
 import java.util.List;
 import java.util.Map;
 import java.util.logging.FileHandler;
@@ -6,9 +19,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import dev.langchain4j.data.segment.TextSegment;
 
+<<<<<<< HEAD
 public class ChatService extends BaseQueryProcessor {
     private static final String SQL_PATTERN = "```sql\\s+(.*?)\\s+```";
     private static final Logger logger = Logger.getLogger(ChatService.class.getName());
+=======
+public class ChatService {
+    private final ChatLanguageModel chatModel;
+    private final List<ChatMessage> conversationHistory = new ArrayList<>();
+>>>>>>> 1ea2aac (Adds langchain for openAI API support)
     
     private Chatbot chatService;
     private DatabaseService dbService;
@@ -29,6 +48,7 @@ public class ChatService extends BaseQueryProcessor {
     
     // Also provide the original constructor for backward compatibility
     public ChatService(String apiKey) {
+<<<<<<< HEAD
         this.chatService = new Chatbot(apiKey);
         this.dbService = new DatabaseService();
         
@@ -117,6 +137,37 @@ public class ChatService extends BaseQueryProcessor {
             "Database results:\n" + formattedResults + 
             "\nPlease provide a helpful, conversational response based on these results."
         );
+=======
+        this.chatModel = OpenAiChatModel.builder()
+            .apiKey(apiKey)
+            .timeout(Duration.ofSeconds(30))
+            .modelName("gpt-4o")
+            .temperature(0.3)
+            .maxTokens(500)
+            .build();
+    }
+    
+    public void setSystemMessage(String message) {
+        conversationHistory.clear();
+        conversationHistory.add(new SystemMessage(message));
+    }
+    
+    public String sendMessage(String userMessage) {
+        // Add user message to conversation history
+        conversationHistory.add(new UserMessage(userMessage));
+        
+        // Get response from the model
+        ChatResponse response = chatModel.chat(conversationHistory);
+        
+        // Extract the AI message from the response
+        AiMessage aiMessage = response.aiMessage();
+        
+        // Add AI response to conversation history
+        conversationHistory.add(aiMessage);
+        
+        // Return the response text
+        return aiMessage.text();
+>>>>>>> 1ea2aac (Adds langchain for openAI API support)
     }
     
     private boolean isSemanticSearchQuery(String query) {
@@ -165,6 +216,7 @@ public class ChatService extends BaseQueryProcessor {
     
     @Override
     public void close() {
+<<<<<<< HEAD
         try {
             if (chatService != null) {
                 chatService.close();
@@ -181,5 +233,9 @@ public class ChatService extends BaseQueryProcessor {
         } catch (Exception e) {
             System.err.println("Error closing services: " + e.getMessage());
         }
+=======
+        // LangChain4j models typically don't require explicit shutdown
+        // Method kept for API compatibility
+>>>>>>> 1ea2aac (Adds langchain for openAI API support)
     }
 }

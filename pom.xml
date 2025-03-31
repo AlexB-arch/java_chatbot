@@ -53,12 +53,23 @@
 
         <dependency>
             <groupId>dev.langchain4j</groupId>
+<<<<<<< HEAD
             <artifactId>langchain4j-embeddings-parent</artifactId>
             <version>1.0.0-beta3</version>
             <type>pom</type>
+=======
+            <artifactId>langchain4j</artifactId>
+            <version>1.0.0-beta2</version>
+>>>>>>> 1ea2aac (Adds langchain for openAI API support)
         </dependency>
 
-
+        <!-- https://mvnrepository.com/artifact/dev.langchain4j/langchain4j-open-ai -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai</artifactId>
+            <version>1.0.0-beta2</version>
+        </dependency>
+        
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-open-ai</artifactId>
