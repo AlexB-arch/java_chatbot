@@ -1,38 +1,50 @@
-import com.theokanning.openai.completion.chat.*;
-import com.theokanning.openai.service.OpenAiService;
+import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.chat.response.ChatResponse;
+import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.langchain4j.model.openai.*;
+import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.data.message.SystemMessage;
+import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.data.message.AiMessage;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.time.Duration;
 
 public class ChatService {
-    private final OpenAiService openAiService;
+    private final ChatLanguageModel chatModel;
     private final List<ChatMessage> conversationHistory = new ArrayList<>();
     
     public ChatService(String apiKey) {
-        this.openAiService = new OpenAiService(apiKey, Duration.ofSeconds(30));
+        this.chatModel = OpenAiChatModel.builder()
+            .apiKey(apiKey)
+            .timeout(Duration.ofSeconds(30))
+            .modelName("gpt-4o")
+            .temperature(0.3)
+            .maxTokens(500)
+            .build();
     }
     
     public void setSystemMessage(String message) {
         conversationHistory.clear();
-        conversationHistory.add(new ChatMessage("system", message));
+        conversationHistory.add(new SystemMessage(message));
     }
     
-    public String sendMessage(String message) {
-        conversationHistory.add(new ChatMessage("user", message));
+    public String sendMessage(String userMessage) {
+        // Add user message to conversation history
+        conversationHistory.add(new UserMessage(userMessage));
         
-        ChatCompletionRequest request = ChatCompletionRequest.builder()
-                .model("gpt-4o")
-                .messages(conversationHistory)
-                .maxTokens(500)
-                .temperature(0.3)
-                .build();
+        // Get response from the model
+        ChatResponse response = chatModel.chat(conversationHistory);
         
-        ChatCompletionResult response = openAiService.createChatCompletion(request);
-        String responseContent = response.getChoices().get(0).getMessage().getContent();
+        // Extract the AI message from the response
+        AiMessage aiMessage = response.aiMessage();
         
-        conversationHistory.add(new ChatMessage("assistant", responseContent));
+        // Add AI response to conversation history
+        conversationHistory.add(aiMessage);
         
-        return responseContent;
+        // Return the response text
+        return aiMessage.text();
     }
     
     public void clearConversation() {
@@ -40,10 +52,7 @@ public class ChatService {
     }
     
     public void close() {
-        try {
-            openAiService.shutdownExecutor();
-        } catch (Exception e) {
-            System.err.println("Error shutting down OpenAI service: " + e.getMessage());
-        }
+        // LangChain4j models typically don't require explicit shutdown
+        // Method kept for API compatibility
     }
 }
