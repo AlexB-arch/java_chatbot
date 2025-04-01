@@ -16,6 +16,6 @@ buildNumber.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 .vscode
-config.properties
+*.properties
 .github
 .DS_Store
