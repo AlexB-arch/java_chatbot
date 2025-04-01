@@ -1,11 +1,10 @@
-import java.io.File;
 import java.util.Properties;
 import java.util.Scanner;
 
 public class Main {
     
     public static void main(String[] args) {
-        DatabaseChatService dbChatService = null;
+        ChatService dbChatService = null;
         
         try {
             // Check if database exists and initialize if needed
@@ -17,10 +16,10 @@ public class Main {
             String apiKey = properties.getProperty("openai.api.key");
 
             // Create database chat service
-            dbChatService = new DatabaseChatService(apiKey);
+            dbChatService = new ChatService(apiKey);
             
             // Add a shutdown hook to ensure clean closure
-            final DatabaseChatService finalDbChatService = dbChatService;
+            final ChatService finalDbChatService = dbChatService;
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 System.out.println("Shutting down services...");
                 if (finalDbChatService != null) {
