@@ -31,28 +31,37 @@ public class ChatService {
 =======
 import java.util.List;
 import java.util.Map;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ChatService extends BaseQueryProcessor {
     private static final String SQL_PATTERN = "```sql\\s+(.*?)\\s+```";
+    private static final Logger logger = Logger.getLogger(ChatService.class.getName());
     
     private Chatbot chatService;
     private DatabaseService dbService;
 >>>>>>> 4bf41d9 (Refactoring and cleanup)
     
+<<<<<<< HEAD
     private Chatbot chatService;
     private DatabaseService dbService;
     private VectorStoreService vectorStoreService; // Add this field
     
+=======
+>>>>>>> 56d499f (Adds logs directory and methods)
     public ChatService(String apiKey, FileHandler fileHandler) {
         // Add the file handler to this class's logger
         logger.addHandler(fileHandler);
         
         this.chatService = new Chatbot(apiKey);
         this.dbService = new DatabaseService();
+<<<<<<< HEAD
         this.vectorStoreService = new VectorStoreService(apiKey, this.dbService); // Initialize it
         this.vectorStoreService.initializeVectorStore(); // Load data
+=======
+>>>>>>> 56d499f (Adds logs directory and methods)
         
         // Initialize the context for the chatbot
         initializeContext();
@@ -208,9 +217,15 @@ public class ChatService extends BaseQueryProcessor {
         
         if (sqlMatcher.find()) {
             String sqlQuery = sqlMatcher.group(1).trim();
+            
+            // Log the generated SQL query to the logs file
+            logger.info("Generated SQL query: " + sqlQuery);
+            
             results = dbService.executeQuery(sqlQuery);
         } else {
             // Fallback if no SQL was found
+            logger.warning("No SQL query found in the response. " +
+                           "Response: " + chatResponse);
             return "I couldn't generate a proper SQL query for your question. " +
                    "Could you please rephrase your question?";
         }

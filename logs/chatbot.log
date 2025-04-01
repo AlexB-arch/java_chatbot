@@ -42,6 +42,7 @@ These colleges represent a diverse range of disciplines and areas of study, from
 These colleges cover a wide range of disciplines, from arts and sciences to business and health services, ensuring a diverse array of educational opportunities. If you have any specific questions about a particular college or need more information, feel free to ask!
 [2025-04-01 12:45:19] INFO: Chat session ended
 [2025-04-01 12:45:19] INFO: Application shutting down
+<<<<<<< HEAD
 [2025-04-01 13:01:14] INFO: Chatbot started.
 [2025-04-01 13:01:15] INFO: Chat session starting
 [2025-04-01 13:03:25] INFO: Chat session ended
@@ -66,3 +67,5 @@ These colleges cover a wide range of disciplines, from arts and sciences to busi
 [2025-04-15 11:03:59] INFO: Chat session starting
 [2025-04-15 11:06:40] INFO: Chat session ended
 [2025-04-15 11:06:40] INFO: Application shutting down
+=======
+>>>>>>> 56d499f (Adds logs directory and methods)
