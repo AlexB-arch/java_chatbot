@@ -1,0 +1,44 @@
+[2025-04-01 12:34:07] INFO: Chatbot started.
+[2025-04-01 12:34:07] INFO: Chat session starting
+[2025-04-01 12:34:35] INFO: User: what are the requirements for an accounting major?
+[2025-04-01 12:34:44] INFO: Chatbot: The requirements for an Accounting major include completing a total of 128 credit hours. Additionally, you need to achieve at least a grade of 'C' in each business course to meet the major's standards. This ensures that you have a solid understanding of the material covered in your business-related classes. If you have any more questions about the Accounting major or need further details, feel free to ask!
+[2025-04-01 12:34:49] INFO: Chat session ended
+[2025-04-01 12:34:49] INFO: Application shutting down
+[2025-04-01 12:41:56] INFO: Chatbot started.
+[2025-04-01 12:41:56] INFO: Chat session starting
+[2025-04-01 12:42:20] INFO: User: list only the available colleges
+[2025-04-01 12:42:25] INFO: Chatbot: Here is a list of the available colleges:
+
+1. **College of Arts, Humanities and Social Sciences** (ID: COAHS)
+2. **College of Science and Engineering** (ID: COSAE)
+3. **College of Biblical Studies** (ID: COBS)
+4. **College of Business Administration** (ID: COBA)
+5. **College of Health and Behavioral Sciences** (ID: COHABS)
+6. **College of Health and Human Services** (ID: COHAHS)
+7. **College of Leadership and Professional Studies** (ID: COLAPS)
+8. **College of Nursing** (ID: CON)
+9. **College of Honors** (ID: COH)
+10. **College of Learning and Development** (ID: COLAD)
+
+These colleges represent a diverse range of disciplines and areas of study, from arts and humanities to science and engineering, as well as specialized fields like nursing and business administration. If you need more information about any specific college or have other questions, feel free to ask!
+[2025-04-01 12:42:28] INFO: Chat session ended
+[2025-04-01 12:42:28] INFO: Application shutting down
+[2025-04-01 12:45:04] INFO: Chatbot started.
+[2025-04-01 12:45:04] INFO: Chat session starting
+[2025-04-01 12:45:11] INFO: User: what are the colleges?
+[2025-04-01 12:45:16] INFO: Chatbot: Here are the colleges available in the database:
+
+1. College of Arts, Humanities and Social Sciences
+2. College of Science and Engineering
+3. College of Biblical Studies
+4. College of Business Administration
+5. College of Health and Behavioral Sciences
+6. College of Health and Human Services
+7. College of Leadership and Professional Studies
+8. College of Nursing
+9. College of Honors
+10. College of Learning and Development
+
+These colleges cover a wide range of disciplines, from arts and sciences to business and health services, ensuring a diverse array of educational opportunities. If you have any specific questions about a particular college or need more information, feel free to ask!
+[2025-04-01 12:45:19] INFO: Chat session ended
+[2025-04-01 12:45:19] INFO: Application shutting down
