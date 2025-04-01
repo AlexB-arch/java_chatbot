@@ -17,11 +17,15 @@ buildNumber.properties
 .classpath
 .vscode
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.properties
 .github
 .DS_Store
 =======
 config.properties
+=======
+*.properties
+>>>>>>> 0b364c0 (Changes to gitignore and removes nlp models)
 .github
 <<<<<<< HEAD
 >>>>>>> 8ec870e (Changes to gitignore, adds github folder)

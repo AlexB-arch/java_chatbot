@@ -1,13 +1,19 @@
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.*;
+<<<<<<< HEAD
 import java.io.File;
+=======
+>>>>>>> 0b364c0 (Changes to gitignore and removes nlp models)
 
 public class Main {
 
     private static final Logger logger = Logger.getLogger(Main.class.getName());
+<<<<<<< HEAD
     private static FileHandler globalFileHandler;
     private static boolean loggingEnabled = true; // Default value
+=======
+>>>>>>> 0b364c0 (Changes to gitignore and removes nlp models)
     
     public static void main(String[] args) {
 <<<<<<< HEAD
