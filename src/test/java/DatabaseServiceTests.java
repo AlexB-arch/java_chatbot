@@ -12,6 +12,18 @@ public class DatabaseServiceTests {
     }
 
     @Test
+    public void testConnection() {
+        Assert.assertNotNull(databaseService);
+        
+    }
+
+    @Test
+    public void testDisconnection() {
+        databaseService.close();
+        Assert.assertTrue(databaseService.isClosed());
+    }
+
+    @Test
     public void testExecuteQuery() {
         List<Map<String, Object>> results = databaseService.executeQuery("SELECT * FROM teachers");
         results.forEach(System.out::println);
