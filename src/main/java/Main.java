@@ -1,4 +1,3 @@
-import java.io.File;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.*;
@@ -11,6 +10,7 @@ public class Main {
     private static boolean loggingEnabled = true; // Default value
     
     public static void main(String[] args) {
+<<<<<<< HEAD
         // Process command line arguments
         processCommandLineArgs(args);
         
@@ -19,6 +19,8 @@ public class Main {
             logger.info("Application starting...");
         }
         
+=======
+>>>>>>> 4bf41d9 (Refactoring and cleanup)
         ChatService dbChatService = null;
         
         try {
@@ -47,6 +49,7 @@ public class Main {
             // Load API Key
             String apiKey = properties.getProperty("openai.api.key");
 
+<<<<<<< HEAD
             // Initialize the ChatService with vector store capabilities
             dbChatService = new ChatService(apiKey);
             System.out.println("Vector store initialized and ready for semantic search!");
@@ -59,6 +62,11 @@ public class Main {
             vectorStoreService.initializeVectorStore();
             vectorStoreService.printVectorStoreData();
 
+=======
+            // Create database chat service
+            dbChatService = new ChatService(apiKey);
+            
+>>>>>>> 4bf41d9 (Refactoring and cleanup)
             // Add a shutdown hook to ensure clean closure
             final ChatService finalDbChatService = dbChatService;
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
