@@ -1,7 +1,10 @@
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.logging.*;
 
 public class Main {
+
+    private static final Logger logger = Logger.getLogger(Main.class.getName());
     
     public static void main(String[] args) {
         ChatService dbChatService = null;
