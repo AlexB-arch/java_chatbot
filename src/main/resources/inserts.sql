@@ -836,6 +836,9 @@ INSERT INTO student_section (studentID, sectionID, grade) VALUES (85, 13003, NUL
 insert into major_class(majorID, classID) values('CS','CS130');
 insert into major_class(majorID, classID) values('DET','DET130');
 insert into major_class(majorID, classID) values('ITC','ITC320');
+insert into major_class(majorID, classID) values('ACCT','ACCT210');
+insert into major_class(majorID, classID) values('ACCT', 'BLAW363');
+insert into major_class(majorID, classID) values('ACCT','BUSA120');
 
 INSERT INTO and_prereq (course, prereq) VALUES ('CHEM133','MATH124');
 INSERT INTO and_prereq (course, prereq) VALUES ('CHEM131','MATH124');
