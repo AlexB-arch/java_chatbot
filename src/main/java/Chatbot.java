@@ -13,6 +13,8 @@ import java.time.Duration;
 public class Chatbot {
     private final ChatLanguageModel chatModel;
     private final List<ChatMessage> conversationHistory = new ArrayList<>();
+    private Student currentStudent;
+    private String baseSystemMessage;
     
     public Chatbot(String apiKey) {
         this.chatModel = OpenAiChatModel.builder()
@@ -25,8 +27,31 @@ public class Chatbot {
     }
     
     public void setSystemMessage(String message) {
+        this.baseSystemMessage = message;
+        updateSystemMessage();
+    }
+    
+    public void setCurrentStudent(Student student) {
+        this.currentStudent = student;
+        updateSystemMessage();
+    }
+    
+    private void updateSystemMessage() {
         conversationHistory.clear();
-        conversationHistory.add(new SystemMessage(message));
+        
+        // Create a system message that includes student context if available
+        StringBuilder systemMessage = new StringBuilder(baseSystemMessage != null ? baseSystemMessage : "");
+        
+        if (currentStudent != null) {
+            systemMessage.append("\n\nCurrent user information:");
+            systemMessage.append("\nName: ").append(currentStudent.getName());
+            systemMessage.append("\nStudent ID: ").append(currentStudent.getStudentId());
+            systemMessage.append("\nMajor: ").append(currentStudent.getMajor());
+            systemMessage.append("\nGPA: ").append(currentStudent.getGpa());
+            systemMessage.append("\n\nPlease personalize responses for this student.");
+        }
+        
+        conversationHistory.add(new SystemMessage(systemMessage.toString()));
     }
     
     public String sendMessage(String userMessage) {
@@ -48,6 +73,11 @@ public class Chatbot {
     
     public void clearConversation() {
         conversationHistory.clear();
+        updateSystemMessage(); // Re-add the system message with current student context
+    }
+    
+    public Student getCurrentStudent() {
+        return currentStudent;
     }
     
     public void close() {
