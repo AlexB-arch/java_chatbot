@@ -4,6 +4,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import dev.langchain4j.data.segment.TextSegment;
 
 public class ChatService extends BaseQueryProcessor {
     private static final String SQL_PATTERN = "```sql\\s+(.*?)\\s+```";
@@ -11,6 +12,7 @@ public class ChatService extends BaseQueryProcessor {
     
     private Chatbot chatService;
     private DatabaseService dbService;
+    private VectorStoreService vectorStoreService; // Add this field
     
     public ChatService(String apiKey, FileHandler fileHandler) {
         // Add the file handler to this class's logger
@@ -18,6 +20,8 @@ public class ChatService extends BaseQueryProcessor {
         
         this.chatService = new Chatbot(apiKey);
         this.dbService = new DatabaseService();
+        this.vectorStoreService = new VectorStoreService(apiKey, this.dbService); // Initialize it
+        this.vectorStoreService.initializeVectorStore(); // Load data
         
         // Initialize the context for the chatbot
         initializeContext();
@@ -27,6 +31,19 @@ public class ChatService extends BaseQueryProcessor {
     public ChatService(String apiKey) {
         this.chatService = new Chatbot(apiKey);
         this.dbService = new DatabaseService();
+        
+        try {
+            this.vectorStoreService = new VectorStoreService(apiKey, this.dbService);
+            if (this.vectorStoreService.testVectorStore()) {
+                this.vectorStoreService.initializeVectorStore();
+                logger.info("Vector store initialized successfully");
+            } else {
+                logger.warning("Vector store test failed, proceeding without vector search capability");
+            }
+        } catch (Exception e) {
+            logger.severe("Error initializing vector store: " + e.getMessage());
+            e.printStackTrace();
+        }
         
         // Initialize the context for the chatbot
         initializeContext();
@@ -59,6 +76,11 @@ public class ChatService extends BaseQueryProcessor {
     
     @Override
     public String processQuery(String userQuestion) {
+        // Add semantic search capability here
+        if (isSemanticSearchQuery(userQuestion)) {
+            return handleSemanticSearch(userQuestion);
+        }
+        
         // Ask the LLM to generate a SQL query for the question
         String chatResponse = chatService.sendMessage(
             "User question: \"" + userQuestion + "\"\n" +
@@ -97,6 +119,29 @@ public class ChatService extends BaseQueryProcessor {
         );
     }
     
+    private boolean isSemanticSearchQuery(String query) {
+        String lowerQuery = query.toLowerCase();
+        return lowerQuery.contains("similar") || 
+               lowerQuery.contains("like") || 
+               lowerQuery.contains("related to") ||
+               lowerQuery.contains("about");
+    }
+
+    private String handleSemanticSearch(String query) {
+        List<TextSegment> relevantSegments = vectorStoreService.findRelevantContent(query, 3);
+        
+        if (relevantSegments.isEmpty()) {
+            return "I couldn't find any information related to your query.";
+        }
+        
+        StringBuilder response = new StringBuilder("Here's what I found:\n\n");
+        for (TextSegment segment : relevantSegments) {
+            response.append(segment.text()).append("\n\n");
+        }
+        
+        return response.toString();
+    }
+    
     // Format database results into a readable string
     protected String formatResults(List<Map<String, Object>> results) {
         if (results == null || results.isEmpty()) {
@@ -127,6 +172,11 @@ public class ChatService extends BaseQueryProcessor {
             
             if (dbService != null) {
                 dbService.close();
+            }
+            
+            // Add this check to close the vector store service
+            if (vectorStoreService != null) {
+                vectorStoreService.close();
             }
         } catch (Exception e) {
             System.err.println("Error closing services: " + e.getMessage());

@@ -46,9 +46,18 @@ public class Main {
             // Load API Key
             String apiKey = properties.getProperty("openai.api.key");
 
-            // Create database chat service
+            // Initialize the ChatService with vector store capabilities
             dbChatService = new ChatService(apiKey);
-            
+            System.out.println("Vector store initialized and ready for semantic search!");
+
+            // Initialize the DatabaseService before using it
+            DatabaseService databaseService = new DatabaseService();
+
+            // In Main.java or your test class
+            VectorStoreService vectorStoreService = new VectorStoreService(apiKey, databaseService);
+            vectorStoreService.initializeVectorStore();
+            vectorStoreService.printVectorStoreData();
+
             // Add a shutdown hook to ensure clean closure
             final ChatService finalDbChatService = dbChatService;
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -137,7 +146,7 @@ public class Main {
 
             // Set up logging with clean format
             System.setProperty("java.util.logging.SimpleFormatter.format", 
-                              "[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] %4$s: %5$s%n");
+                              "[%1$tY-%1$tm-%1$td %1$tH:%1$tM-%1$tS] %4$s: %5$s%n");
             
             // Remove old handler if exists
             if (globalFileHandler != null) {
