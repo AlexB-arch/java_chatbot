@@ -33,8 +33,14 @@ public class Main {
             properties.load(Main.class.getResourceAsStream("/config.properties"));
             String apiKey = properties.getProperty("openai.api.key");
 
+            // Add apikey from .zshrc
+            String zshApiKey = System.getenv("OPENAI_API_KEY");
+            if (zshApiKey != null && !zshApiKey.isEmpty()) {
+                apiKey = zshApiKey;
+            }
+
             // Create database chat service
-            dbChatService = new ChatService(apiKey);
+            dbChatService = new ChatService(zshApiKey);
             
             // Add a shutdown hook to ensure clean closure
             final ChatService finalDbChatService = dbChatService;
