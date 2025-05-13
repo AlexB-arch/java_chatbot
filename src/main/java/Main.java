@@ -2,11 +2,12 @@ import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.*;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 public class Main {
 
     private static final Logger logger = Logger.getLogger(Main.class.getName());
-    private static FileHandler globalFileHandler; // Add this field
     
     public static void main(String[] args) {
         logger.info("Application starting...");
@@ -19,19 +20,16 @@ public class Main {
                 logsDir.mkdirs();
             }
 
-            // Set up logging with clean format
-            System.setProperty("java.util.logging.SimpleFormatter.format", 
-                               "[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS] %4$s: %5$s%n");
-            globalFileHandler = new FileHandler("./logs/chatbot.log", true);
-            globalFileHandler.setFormatter(new SimpleFormatter());
-            logger.addHandler(globalFileHandler);
+            // Logging configuration is loaded from logging.properties
+            String apiKey = System.getenv("OPENAI_API_KEY");
+            dbChatService = new ChatService(apiKey);
             logger.setLevel(Level.ALL);
             logger.info("Chatbot started.");
           
             // Load API Key
             Properties properties = new Properties();
             properties.load(Main.class.getResourceAsStream("/config.properties"));
-            String apiKey = properties.getProperty("openai.api.key");
+            apiKey = properties.getProperty("openai.api.key");
 
             // Add apikey from .zshrc
             String zshApiKey = System.getenv("OPENAI_API_KEY");
@@ -39,17 +37,8 @@ public class Main {
                 apiKey = zshApiKey;
             }
 
-            // Create database chat service
-            dbChatService = new ChatService(zshApiKey);
-            
-            // Add a shutdown hook to ensure clean closure
-            final ChatService finalDbChatService = dbChatService;
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                System.out.println("Shutting down services...");
-                if (finalDbChatService != null) {
-                    finalDbChatService.close();
-                }
-            }));
+            // Initialize ChatService (no need to pass FileHandler)
+            dbChatService = new ChatService(apiKey);
             
             Scanner scanner = new Scanner(System.in);
 

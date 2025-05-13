@@ -60,3 +60,16 @@ These colleges cover a wide range of disciplines, from arts and sciences to busi
 [2025-04-25 20:03:10] INFO: Chat session starting
 [2025-04-25 20:03:25] INFO: Chat session ended
 [2025-04-25 20:03:25] INFO: Application shutting down
+[2025-05-09 16:36:31] INFO: Chatbot started.
+[2025-05-09 16:36:32] INFO: Chat session starting
+[2025-05-09 16:36:51] INFO: User: what classes are related to computer science
+[2025-05-09 16:36:59] INFO: Chatbot: It looks like there are no courses directly listed under a department named "Computer Science" in the database. This could be due to a few reasons:
+
+1. **Different Department Name**: Sometimes, departments might be named differently, such as "Information Technology" or "Software Engineering," which could include computer science-related courses.
+
+2. **Data Entry Variations**: There might be a variation in how the department name is entered in the database. It's worth checking for similar department names or any common abbreviations.
+
+3. **No Courses Listed**: It's also possible that there are currently no courses offered under the Computer Science department in the database.
+
+If you have more context or specific course titles or numbers, I can help refine the search. Alternatively, you might want to check with the academic office for more detailed information about computer science-related courses.
+[2025-05-09 16:38:07] SEVERE: Error occurred: No line found

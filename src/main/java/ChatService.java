@@ -1,6 +1,5 @@
 import java.util.List;
 import java.util.Map;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,22 +11,10 @@ public class ChatService extends BaseQueryProcessor {
     private Chatbot chatService;
     private DatabaseService dbService;
     
-    public ChatService(String apiKey, FileHandler fileHandler) {
-        // Add the file handler to this class's logger
-        logger.addHandler(fileHandler);
-        
-        this.chatService = new Chatbot(apiKey);
-        this.dbService = new DatabaseService();
-        
-        // Initialize the context for the chatbot
-        initializeContext();
-    }
-    
-    // Also provide the original constructor for backward compatibility
     public ChatService(String apiKey) {
+        // Logging is configured via logging.properties
         this.chatService = new Chatbot(apiKey);
         this.dbService = new DatabaseService();
-        
         // Initialize the context for the chatbot
         initializeContext();
     }
