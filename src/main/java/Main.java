@@ -27,8 +27,15 @@ public class Main {
             ElasticsearchVectorStoreClient vectorStoreClient = new ElasticsearchVectorStoreClient("localhost", 9200, "rag_vectors", 1536);
             RAGPipeline ragPipeline = new RAGPipeline(embeddingService, vectorStoreClient, apiKey, 500);
             DocumentIngestor ingestor = new DocumentIngestor(ragPipeline);
-            ingestor.ingestPdfFile("dafi21-101.pdf");
+            long docCount = vectorStoreClient.countDocuments();
+            if (docCount == 0) {
+                ingestor.ingestPdfFile("dafi21-101.pdf");
                 logger.info("PDF 'dafi21-101.pdf' ingested successfully.");
+            } else if (docCount > 0) {
+                logger.info("Index already contains " + docCount + " documents. Skipping ingestion.");
+            } else {
+                logger.warning("Could not determine document count. Skipping ingestion to avoid duplicates.");
+            }
             } catch (Exception ex) {
                 logger.warning("Could not ingest PDF at startup: " + ex.getMessage());
             }

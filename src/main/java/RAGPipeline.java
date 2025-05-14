@@ -13,7 +13,10 @@ public class RAGPipeline {
     public RAGPipeline(EmbeddingService embeddingService, ElasticsearchVectorStoreClient vectorStoreClient, String openAiApiKey, int chunkSize) {
         this.embeddingService = embeddingService;
         this.vectorStoreClient = vectorStoreClient;
-        this.llm = OpenAiChatModel.withApiKey(openAiApiKey);
+        this.llm = OpenAiChatModel.builder()
+    .apiKey(openAiApiKey)
+    .modelName("gpt-4o") // You can change to another supported model if desired
+    .build();
         this.chunkSize = chunkSize;
     }
 

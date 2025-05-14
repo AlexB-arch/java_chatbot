@@ -1,5 +1,6 @@
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URI;
 import java.io.OutputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
@@ -19,7 +20,7 @@ public class EmbeddingService {
 
     // Gets embedding for a given text from OpenAI API
     public List<Double> getEmbedding(String text) throws Exception {
-        URL url = new URL("https://api.openai.com/v1/embeddings");
+        URL url = URI.create("https://api.openai.com/v1/embeddings").toURL();
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Authorization", "Bearer " + openAiApiKey);
@@ -33,10 +34,14 @@ public class EmbeddingService {
             os.write(payload.getBytes(StandardCharsets.UTF_8));
         }
         try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-            Map resp = mapper.readValue(br, Map.class);
-            List<Object> data = (List<Object>) resp.get("data");
+            Map<String, Object> resp = mapper.readValue(br, new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {});
+            Object dataObj = resp.get("data");
+            if (!(dataObj instanceof List<?>)) {
+                throw new RuntimeException("Expected a list for 'data'");
+            }
+            List<?> data = (List<?>) dataObj;
             if (data.isEmpty()) throw new RuntimeException("No embedding returned");
-            Map embeddingObj = (Map) data.get(0);
+            Map<String, Object> embeddingObj = (Map<String, Object>) data.get(0);
             List<Double> embedding = ((List<?>) embeddingObj.get("embedding")).stream().map(x -> ((Number)x).doubleValue()).collect(Collectors.toList());
             return embedding;
         }
