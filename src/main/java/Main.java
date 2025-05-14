@@ -1,104 +1,58 @@
-import java.util.Properties;
 import java.util.Scanner;
-import java.util.logging.*;
-import java.io.File;
 
 public class Main {
-
-    private static final Logger logger = Logger.getLogger(Main.class.getName());
-    
     public static void main(String[] args) {
-        logger.info("Application starting...");
-        ChatService dbChatService = null;
-        
         try {
-            // Create logs directory if it doesn't exist
-            File logsDir = new File("logs");
-            if (!logsDir.exists()) {
-                logsDir.mkdirs();
-            }
-
-            // Logging configuration is loaded from logging.properties
+            // Get API key from environment variable
             String apiKey = System.getenv("OPENAI_API_KEY");
-            dbChatService = new ChatService(apiKey);
-            // Ingest PDF file from root folder at startup
-        try {
+            if (apiKey == null || apiKey.isEmpty()) {
+                System.err.println("OPENAI_API_KEY environment variable not set.");
+                return;
+            }
+
+            // Elasticsearch config (adjust if needed)
+            String esHost = "localhost";
+            int esPort = 9200;
+            String esIndex = "rag_docs";
+            int embeddingDims = 1536; // for text-embedding-ada-002
+            int chunkSize = 1000;
+
+            // Initialize services
             EmbeddingService embeddingService = new EmbeddingService(apiKey);
-            ElasticsearchVectorStoreClient vectorStoreClient = new ElasticsearchVectorStoreClient("localhost", 9200, "rag_vectors", 1536);
-            RAGPipeline ragPipeline = new RAGPipeline(embeddingService, vectorStoreClient, apiKey, 500);
-            DocumentIngestor ingestor = new DocumentIngestor(ragPipeline);
-            long docCount = vectorStoreClient.countDocuments();
-            if (docCount == 0) {
-                ingestor.ingestPdfFile("dafi21-101.pdf");
-                logger.info("PDF 'dafi21-101.pdf' ingested successfully.");
-            } else if (docCount > 0) {
-                logger.info("Index already contains " + docCount + " documents. Skipping ingestion.");
-            } else {
-                logger.warning("Could not determine document count. Skipping ingestion to avoid duplicates.");
-            }
-            } catch (Exception ex) {
-                logger.warning("Could not ingest PDF at startup: " + ex.getMessage());
-            }
+            ElasticsearchVectorStoreClient vectorStore = new ElasticsearchVectorStoreClient(esHost, esPort, esIndex, embeddingDims);
+            RAGPipeline rag = new RAGPipeline(embeddingService, vectorStore, apiKey, chunkSize);
 
-            logger.setLevel(Level.ALL);
-            logger.info("Chatbot started.");
-          
-            // Load API Key
-            Properties properties = new Properties();
-            properties.load(Main.class.getResourceAsStream("/config.properties"));
-            apiKey = properties.getProperty("openai.api.key");
-
-            // Add apikey from .zshrc
-            String zshApiKey = System.getenv("OPENAI_API_KEY");
-            if (zshApiKey != null && !zshApiKey.isEmpty()) {
-                apiKey = zshApiKey;
-            }
-
-            // Initialize ChatService (no need to pass FileHandler)
-            dbChatService = new ChatService(apiKey);
-            
+            // Simple CLI
             Scanner scanner = new Scanner(System.in);
-
-            System.out.println("Welcome to the Educational Database Chatbot!");
-            System.out.println("You can ask questions about students, courses, majors, and more.");
-            System.out.println("Type 'exit' to quit.");
-
-            logger.info("Chat session starting");
-
+            System.out.println("RAG Pipeline Demo. Type 'exit' to quit.");
             while (true) {
-                System.out.print("You: ");
-                String input = scanner.nextLine();
-                if (input.equalsIgnoreCase("exit")) {
-                    break;
+                System.out.print("Enter a document to ingest (or just press Enter to skip): ");
+                String doc = scanner.nextLine();
+                if (doc.equalsIgnoreCase("exit")) break;
+                if (!doc.isBlank()) {
+                    try {
+                        rag.ingestDocument(doc);
+                        System.out.println("Document ingested.");
+                    } catch (Exception e) {
+                        System.err.println("Error ingesting document: " + e.getMessage());
+                    }
                 }
-                
-                // Log user input
-                logger.info("User: " + input);
-                
-                String response = dbChatService.processQuery(input);
-                System.out.println("Chatbot: " + response);
-                
-                // Log chatbot response
-                logger.info("Chatbot: " + response);
+                System.out.print("Ask a question: ");
+                String question = scanner.nextLine();
+                if (question.equalsIgnoreCase("exit")) break;
+                if (!question.isBlank()) {
+                    try {
+                        String answer = rag.query(question, 3);
+                        System.out.println("Answer: " + answer);
+                    } catch (Exception e) {
+                        System.err.println("Error answering question: " + e.getMessage());
+                    }
+                }
             }
-
-            logger.info("Chat session ended");
-            
-            dbChatService.close();
             scanner.close();
-            
-        } catch (Exception e) {
-            logger.severe("Error occurred: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            // Ensure proper closure of resources
-            if (dbChatService != null) {
-                dbChatService.close();
-            }
-            logger.info("Application shutting down");
+            System.out.println("Session ended.");
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 }
-
-// Project needs an abstract class
-// Project needs a final class
