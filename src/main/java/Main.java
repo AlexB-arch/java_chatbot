@@ -24,7 +24,7 @@ public class Main {
             // Ingest PDF file from root folder at startup
         try {
             EmbeddingService embeddingService = new EmbeddingService(apiKey);
-            VectorStoreClient vectorStoreClient = new VectorStoreClient("http://localhost:8000");
+            ElasticsearchVectorStoreClient vectorStoreClient = new ElasticsearchVectorStoreClient("localhost", 9200, "rag_vectors", 1536);
             RAGPipeline ragPipeline = new RAGPipeline(embeddingService, vectorStoreClient, apiKey, 500);
             DocumentIngestor ingestor = new DocumentIngestor(ragPipeline);
             ingestor.ingestPdfFile("dafi21-101.pdf");

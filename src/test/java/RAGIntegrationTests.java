@@ -15,7 +15,7 @@ public class RAGIntegrationTests {
     @Test
     public void testVectorStoreClientConnection() {
         try {
-            VectorStoreClient vectorStoreClient = new VectorStoreClient("http://localhost:8000"); // Update if needed
+            ElasticsearchVectorStoreClient vectorStoreClient = new ElasticsearchVectorStoreClient("localhost", 9200, "rag_vectors", 1536); // Updated for Elasticsearch
             // Should not throw on instantiation
         } catch (Exception e) {
             fail("Failed to instantiate VectorStoreClient: " + e.getMessage());
@@ -26,7 +26,7 @@ public class RAGIntegrationTests {
     public void testDocumentIngestorInstantiation() {
         try {
             EmbeddingService embeddingService = new EmbeddingService(System.getenv("OPENAI_API_KEY"));
-            VectorStoreClient vectorStoreClient = new VectorStoreClient("http://localhost:8000");
+            ElasticsearchVectorStoreClient vectorStoreClient = new ElasticsearchVectorStoreClient("localhost", 9200, "rag_vectors", 1536);
             RAGPipeline ragPipeline = new RAGPipeline(embeddingService, vectorStoreClient, System.getenv("OPENAI_API_KEY"), 500);
             DocumentIngestor ingestor = new DocumentIngestor(ragPipeline);
             assertNotNull(ingestor);
@@ -39,7 +39,7 @@ public class RAGIntegrationTests {
 public void testPdfIngestion() {
         try {
             EmbeddingService embeddingService = new EmbeddingService(System.getenv("OPENAI_API_KEY"));
-            VectorStoreClient vectorStoreClient = new VectorStoreClient("http://localhost:8000");
+            ElasticsearchVectorStoreClient vectorStoreClient = new ElasticsearchVectorStoreClient("localhost", 9200, "rag_vectors", 1536);
             RAGPipeline ragPipeline = new RAGPipeline(embeddingService, vectorStoreClient, System.getenv("OPENAI_API_KEY"), 500);
             DocumentIngestor ingestor = new DocumentIngestor(ragPipeline);
             ingestor.ingestPdfFile("dafi21-101.pdf");

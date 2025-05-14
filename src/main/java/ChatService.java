@@ -21,7 +21,7 @@ public class ChatService extends BaseQueryProcessor {
         this.chatService = new Chatbot(apiKey);
         this.dbService = new DatabaseService();
         EmbeddingService embeddingService = new EmbeddingService(System.getenv("OPENAI_API_KEY"));
-        VectorStoreClient vectorStoreClient = new VectorStoreClient("http://localhost:8000");
+        ElasticsearchVectorStoreClient vectorStoreClient = new ElasticsearchVectorStoreClient("localhost", 9200, "rag_vectors", 1536);
         this.ragPipeline = new RAGPipeline(embeddingService, vectorStoreClient, System.getenv("OPENAI_API_KEY"), 500);
         // Example: Ingest a PDF file from the root folder
         // DocumentIngestor ingestor = new DocumentIngestor(this.ragPipeline);

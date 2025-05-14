@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Deprecated: Use ElasticsearchVectorStoreClient instead for vector storage.
+ */
+@Deprecated
 public class VectorStoreClient {
     private final String apiUrl;
     private final ObjectMapper mapper = new ObjectMapper();
