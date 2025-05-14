@@ -1,38 +1,29 @@
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.UUID;
-import java.util.ArrayList;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+import java.io.File;
 
 public class DocumentIngestor {
-    private final EmbeddingService embeddingService;
-    private final VectorStoreClient vectorStoreClient;
-    private final int chunkSize = 500; // characters per chunk
+    private final RAGPipeline ragPipeline;
 
-    public DocumentIngestor(EmbeddingService embeddingService, VectorStoreClient vectorStoreClient) {
-        this.embeddingService = embeddingService;
-        this.vectorStoreClient = vectorStoreClient;
+    public DocumentIngestor(RAGPipeline ragPipeline) {
+        this.ragPipeline = ragPipeline;
     }
 
-    // Ingests a text file: splits into chunks, embeds, stores in vector DB
+    // Ingests a text file using RAGPipeline
     public void ingestTextFile(String filePath) throws Exception {
         String content = Files.readString(Paths.get(filePath));
-        List<String> chunks = chunkText(content, chunkSize);
-        for (String chunk : chunks) {
-            List<Double> embedding = embeddingService.getEmbedding(chunk);
-            String id = UUID.randomUUID().toString();
-            vectorStoreClient.addEmbedding(id, embedding, chunk);
-        }
+        ragPipeline.ingestDocument(content);
     }
 
-    private List<String> chunkText(String text, int size) {
-        List<String> chunks = new ArrayList<>();
-        int i = 0;
-        while (i < text.length()) {
-            int end = Math.min(i + size, text.length());
-            chunks.add(text.substring(i, end));
-            i = end;
+    // Ingests a PDF file using RAGPipeline
+    public void ingestPdfFile(String pdfPath) throws Exception {
+        try (PDDocument document = PDDocument.load(new File(pdfPath))) {
+            PDFTextStripper pdfStripper = new PDFTextStripper();
+            String text = pdfStripper.getText(document);
+            ragPipeline.ingestDocument(text);
         }
-        return chunks;
     }
 }
+

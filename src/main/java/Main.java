@@ -21,6 +21,18 @@ public class Main {
             // Logging configuration is loaded from logging.properties
             String apiKey = System.getenv("OPENAI_API_KEY");
             dbChatService = new ChatService(apiKey);
+            // Ingest PDF file from root folder at startup
+        try {
+            EmbeddingService embeddingService = new EmbeddingService(apiKey);
+            VectorStoreClient vectorStoreClient = new VectorStoreClient("http://localhost:8000");
+            RAGPipeline ragPipeline = new RAGPipeline(embeddingService, vectorStoreClient, apiKey, 500);
+            DocumentIngestor ingestor = new DocumentIngestor(ragPipeline);
+            ingestor.ingestPdfFile("dafi21-101.pdf");
+                logger.info("PDF 'dafi21-101.pdf' ingested successfully.");
+            } catch (Exception ex) {
+                logger.warning("Could not ingest PDF at startup: " + ex.getMessage());
+            }
+
             logger.setLevel(Level.ALL);
             logger.info("Chatbot started.");
           

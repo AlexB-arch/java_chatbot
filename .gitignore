@@ -19,3 +19,4 @@ buildNumber.properties
 .github
 .DS_Store
 config.properties
+*.pdf

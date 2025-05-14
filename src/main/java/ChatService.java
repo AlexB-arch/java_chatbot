@@ -12,18 +12,20 @@ public class ChatService extends BaseQueryProcessor {
     
     private Chatbot chatService;
     private DatabaseService dbService;
-    // RAG fields
-    private EmbeddingService embeddingService;
-    private VectorStoreClient vectorStoreClient;
+    // RAG pipeline
+    private RAGPipeline ragPipeline;
     private static final int RAG_TOP_K = 3;
 
     public ChatService(String apiKey) {
         // Logging is configured via logging.properties
         this.chatService = new Chatbot(apiKey);
         this.dbService = new DatabaseService();
-        // Initialize RAG components (update endpoint and key as needed)
-        this.embeddingService = new EmbeddingService(System.getenv("OPENAI_API_KEY"));
-        this.vectorStoreClient = new VectorStoreClient("http://localhost:8000"); // Update endpoint as needed
+        EmbeddingService embeddingService = new EmbeddingService(System.getenv("OPENAI_API_KEY"));
+        VectorStoreClient vectorStoreClient = new VectorStoreClient("http://localhost:8000");
+        this.ragPipeline = new RAGPipeline(embeddingService, vectorStoreClient, System.getenv("OPENAI_API_KEY"), 500);
+        // Example: Ingest a PDF file from the root folder
+        // DocumentIngestor ingestor = new DocumentIngestor(this.ragPipeline);
+        // ingestor.ingestPdfFile("dafi21-101.pdf");
         // Initialize the context for the chatbot
         initializeContext();
     }
@@ -55,48 +57,12 @@ public class ChatService extends BaseQueryProcessor {
     
     @Override
     public String processQuery(String userQuestion) {
-        // --- RAG: Retrieve relevant document context ---
-        List<String> retrievedContexts = new ArrayList<>();
         try {
-            List<Double> queryEmbedding = embeddingService.getEmbedding(userQuestion);
-            retrievedContexts = vectorStoreClient.search(queryEmbedding, RAG_TOP_K);
+            return ragPipeline.query(userQuestion, RAG_TOP_K);
         } catch (Exception e) {
-            logger.warning("RAG retrieval failed: " + e.getMessage());
+            logger.warning("RAGPipeline query failed: " + e.getMessage());
+            return "Sorry, I couldn't process your question due to an internal error.";
         }
-        String ragContext = String.join("\n", retrievedContexts);
-
-        // --- Structured SQL retrieval as before ---
-        String chatResponse = chatService.sendMessage(
-            (ragContext.isEmpty() ? "" : ("Context:\n" + ragContext + "\n\n")) +
-            "User question: \"" + userQuestion + "\"\n" +
-            "Generate an appropriate SQL query to answer this question based on the database schema."
-        );
-        
-        // Extract SQL query from the response
-        Pattern sqlPattern = Pattern.compile(SQL_PATTERN, Pattern.DOTALL);
-        Matcher sqlMatcher = sqlPattern.matcher(chatResponse);
-        
-        List<Map<String, Object>> results;
-        
-        if (sqlMatcher.find()) {
-            String sqlQuery = sqlMatcher.group(1).trim();
-            logger.info("Generated SQL query: " + sqlQuery);
-            results = dbService.executeQuery(sqlQuery);
-        } else {
-            logger.warning("No SQL query found in the response. " +
-                           "Response: " + chatResponse);
-            return "I couldn't generate a proper SQL query for your question. " +
-                   "Could you please rephrase your question?";
-        }
-        String formattedResults = formatResults(results);
-
-        // --- RAG: Augment final prompt with retrieved context and SQL results ---
-        return chatService.sendMessage(
-            (ragContext.isEmpty() ? "" : ("Context:\n" + ragContext + "\n\n")) +
-            "User question: \"" + userQuestion + "\"\n" +
-            "Database results:\n" + formattedResults + 
-            "\nPlease provide a helpful, conversational response based on these results and the context."
-        );
     }
     
     // Format database results into a readable string

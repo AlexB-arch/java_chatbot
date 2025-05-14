@@ -27,10 +27,25 @@ public class RAGIntegrationTests {
         try {
             EmbeddingService embeddingService = new EmbeddingService(System.getenv("OPENAI_API_KEY"));
             VectorStoreClient vectorStoreClient = new VectorStoreClient("http://localhost:8000");
-            DocumentIngestor ingestor = new DocumentIngestor(embeddingService, vectorStoreClient);
-            // Should not throw on instantiation
+            RAGPipeline ragPipeline = new RAGPipeline(embeddingService, vectorStoreClient, System.getenv("OPENAI_API_KEY"), 500);
+            DocumentIngestor ingestor = new DocumentIngestor(ragPipeline);
+            assertNotNull(ingestor);
         } catch (Exception e) {
             fail("Failed to instantiate DocumentIngestor: " + e.getMessage());
+        }
+    }
+
+    @Test
+public void testPdfIngestion() {
+        try {
+            EmbeddingService embeddingService = new EmbeddingService(System.getenv("OPENAI_API_KEY"));
+            VectorStoreClient vectorStoreClient = new VectorStoreClient("http://localhost:8000");
+            RAGPipeline ragPipeline = new RAGPipeline(embeddingService, vectorStoreClient, System.getenv("OPENAI_API_KEY"), 500);
+            DocumentIngestor ingestor = new DocumentIngestor(ragPipeline);
+            ingestor.ingestPdfFile("dafi21-101.pdf");
+            // No exception means success
+        } catch (Exception e) {
+            fail("Failed to ingest PDF: " + e.getMessage());
         }
     }
 }
